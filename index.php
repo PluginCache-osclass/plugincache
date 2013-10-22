@@ -55,7 +55,7 @@ function recursiveRemove($dir) {
 		osc_delete_preference('item_storage_folder', 'plugincache');
 
         $dir = osc_content_path().'uploads/cache_files/'; // IMPORTANT: with '/' at the end
-           $remove_directory = delete_directory($dir);
+           $recursiveRemove($dir);
     }
 
 if(!function_exists('cache_start')) {
