@@ -29,7 +29,7 @@ function recursiveRemove($dir) {
 
     function plugincache_install() {
 		@mkdir(osc_content_path().'uploads/cache_files/', 0777, true);
-		$conn= getConnection();
+
         osc_set_preference('upload_path', osc_content_path().'uploads/cache_files/', 'plugincache', 'STRING');
 		osc_set_preference('main_time', '1', 'plugincache', 'INTEGER');
         osc_set_preference('search_time', '1', 'plugincache', 'INTEGER');
@@ -40,11 +40,9 @@ function recursiveRemove($dir) {
 		osc_set_preference('search_cache', 'active', 'plugincache', 'INTEGER');
 		osc_set_preference('static_cache', 'active', 'plugincache', 'INTEGER');
 		osc_set_preference('item_storage_folder', 'Y-m-d', 'plugincache', 'STRING');
-        $conn->commit();
     }
 
     function plugincache_uninstall() {
-		$conn= getConnection();
         osc_delete_preference('upload_path', 'plugincache');
         osc_delete_preference('search_time', 'plugincache');
         osc_delete_preference('item_time', 'plugincache');
@@ -55,7 +53,7 @@ function recursiveRemove($dir) {
 		osc_delete_preference('search_cache', 'plugincache');
 		osc_delete_preference('static_cache', 'plugincache');
 		osc_delete_preference('item_storage_folder', 'plugincache');
-        $conn->commit();
+
         $dir = osc_content_path().'uploads/cache_files/'; // IMPORTANT: with '/' at the end
            $remove_directory = delete_directory($dir);
     }
