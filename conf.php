@@ -1,175 +1,454 @@
-<?php
-    /*
-     *      OSCLass – software for creating and publishing online classified
-     *                           advertising platforms
-     *
-     *                        Copyright (C) 2010 OSCLASS
-     *
-     *       This program is free software: you can redistribute it and/or
-     *     modify it under the terms of the GNU Affero General Public License
-     *     as published by the Free Software Foundation, either version 3 of
-     *            the License, or (at your option) any later version.
-     *
-     *     This program is distributed in the hope that it will be useful, but
-     *         WITHOUT ANY WARRANTY; without even the implied warranty of
-     *        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-     *             GNU Affero General Public License for more details.
-     *
-     *      You should have received a copy of the GNU Affero General Public
-     * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
-     */
+<?php 
+/*
+Plugin Name: Plugin Cache
+Plugin URI: http://www.osclass.org/
+Description: Cache system for OSClass, make your web load faster!
+Version: 1.0.0
+Author: OSClass
+Author URI: http://www.osclass.org/
+Short Name: plugincache
+Plugin update URI: plugin-cache
+*/
 
-    if(Params::getParam('plugin_action')=='done') {
-        osc_set_preference('search_time', Params::getParam('search_time'), 'plugincache', 'INTEGER');
-        osc_set_preference('item_time', Params::getParam('item_time'), 'plugincache', 'INTEGER');
-        osc_set_preference('main_time', Params::getParam('main_time'), 'plugincache', 'INTEGER');
-		osc_set_preference('static_time', Params::getParam('static_time'), 'plugincache', 'INTEGER');
-		osc_set_preference('main_cache', Params::getParam('main_cache'), 'plugincache', 'INTEGER');
-		osc_set_preference('item_cache', Params::getParam('item_cache'), 'plugincache', 'INTEGER');
-		osc_set_preference('search_cache', Params::getParam('search_cache'), 'plugincache', 'INTEGER');
-		osc_set_preference('static_cache', Params::getParam('static_cache'), 'plugincache', 'INTEGER');
-        echo '<div style="text-align:center; font-size:22px; background-color:#00bb00;"><p>' . __('Congratulations. The plugin is now configured', 'plugincache') . '.<a href="#" title="Close Message" onclick="parentNode.remove()" style="float:right;font-weight:bold;padding-right:50px;color:#FFFFFF;">'. __('x', 'plugincache').'</a></p></div>' ;
-        osc_reset_preferences();
-		} else if(Params::getParam('plugin_action')=='clear') {
-        if(Params::getParam('item')==1) {
-            plugincache_clear_item();
+if(!function_exists('osc_item_is_enabled')) {
+function osc_item_is_enabled() {
+        return (osc_item_field("b_enabled")==1);
+    }
+}
+
+function recursiveRemove($dir) {
+    $structure = glob(rtrim($dir, "/").'/*');
+    if (is_array($structure)) {
+        foreach($structure as $file) {
+            if (is_dir($file)) recursiveRemove($file);
+            elseif (is_file($file)) unlink($file);
         }
-        if(Params::getParam('static')==1) {
-            plugincache_clear_static();
-        }
-        if(Params::getParam('search')==1) {
-            plugincache_clear_search();
-        }
-        if(Params::getParam('main')==1) {
-            plugincache_clear_main();
-        }
-		echo '<div style="text-align:center; font-size:22px; background-color:#00bb00;"><p>' . __('The selected cache has been deleted', 'plugincache') . '.<a href="#" title="Close Message" onclick="parentNode.remove()" style="float:right;font-weight:bold;padding-right:50px;color:#FFFFFF;">'. __('x', 'plugincache').'</a></p></div>' ;
+    }
+    rmdir($dir);
+}
+
+    function plugincache_install() {
+		@mkdir(osc_content_path().'uploads/cache_files/', 0777, true);
+		$conn= getConnection();
+        osc_set_preference('upload_path', osc_content_path().'uploads/cache_files/', 'plugincache', 'STRING');
+		osc_set_preference('main_time', '1', 'plugincache', 'INTEGER');
+        osc_set_preference('search_time', '1', 'plugincache', 'INTEGER');
+        osc_set_preference('item_time', '24', 'plugincache', 'INTEGER'); 
+		osc_set_preference('static_time', '24', 'plugincache', 'INTEGER');
+		osc_set_preference('main_cache', 'active', 'plugincache', 'INTEGER');
+		osc_set_preference('item_cache', 'active', 'plugincache', 'INTEGER');
+		osc_set_preference('search_cache', 'active', 'plugincache', 'INTEGER');
+		osc_set_preference('static_cache', 'active', 'plugincache', 'INTEGER');
+		osc_set_preference('item_storage_folder', 'Y-m-d', 'plugincache', 'STRING');
+        $conn->commit();
+    }
+
+    function plugincache_uninstall() {
+		$conn= getConnection();
+        osc_delete_preference('upload_path', 'plugincache');
+        osc_delete_preference('search_time', 'plugincache');
+        osc_delete_preference('item_time', 'plugincache');
+        osc_delete_preference('main_time', 'plugincache');
+		osc_delete_preference('static_time', 'plugincache');
+		osc_delete_preference('main_cache', 'plugincache');
+		osc_delete_preference('item_cache', 'plugincache');
+		osc_delete_preference('search_cache', 'plugincache');
+		osc_delete_preference('static_cache', 'plugincache');
+		osc_delete_preference('item_storage_folder', 'plugincache');
+        $conn->commit();
+        $dir = osc_content_path().'uploads/cache_files/'; // IMPORTANT: with '/' at the end
+           $remove_directory = delete_directory($dir);
+    }
+
+if(!function_exists('cache_start')) {
+	function cache_start() {
+if( osc_is_home_page() || osc_is_ad_page() || osc_is_search_page() || osc_is_static_page() ) {
+	if(!osc_is_web_user_logged_in()) {
+
+
+ if ((osc_is_ad_page())&&(osc_get_preference('item_cache', 'plugincache')== 'active')&&(!osc_item_is_spam())&&(osc_item_is_active())&&(osc_item_is_enabled())&&(!osc_show_flash_message())) {
+	 $ItemStorageFolder = osc_get_preference('item_storage_folder', 'plugincache') ;
+	 $PubbDate = osc_item_pub_date();
+     $DatePubb = date_create($PubbDate); 
+     $cachePubbDate = date_format($DatePubb, $ItemStorageFolder);
+	 $cachetitle = osc_item_id();  
+      $cachefile = osc_get_preference('upload_path', 'plugincache')."item/".$cachePubbDate."/".$cachetitle.".html";  
+	  $cachetime = osc_get_preference('item_time', 'plugincache')*3600; 
+	   if (file_exists($cachefile) && (time() - $cachetime
+         < filemtime($cachefile))) 
+      {
+         include($cachefile);
+         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." 
+         -->";
+         exit;
       }
+      ob_start(); // start the output buffer
+}  
+	  
+	  elseif ((osc_is_static_page())&&(osc_get_preference('static_cache', 'plugincache')== 'active')&&(!osc_show_flash_message())) {
+		  osc_reset_static_pages();
+        while( osc_has_static_pages() ) {
+		  $cachetitle = osc_static_page_title();  }
+		  osc_reset_static_pages();
+      $cachefile = osc_get_preference('upload_path', 'plugincache')."static/".$cachetitle.".html";  
+	  $cachetime = osc_get_preference('static_time', 'plugincache')*3600; 
+	   if (file_exists($cachefile) && (time() - $cachetime
+         < filemtime($cachefile))) 
+      {
+         include($cachefile);
+         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." 
+         -->";
+         exit;
+      }
+      ob_start(); // start the output buffer
+} 
+	  
+	elseif ((osc_is_home_page())&&(osc_get_preference('main_cache', 'plugincache')== 'active')&&(!osc_show_flash_message())) {
+	  $cachefile = osc_get_preference('upload_path', 'plugincache')."main/cache.html";  
+      $cachetime = osc_get_preference('main_time', 'plugincache')*3600; 
+	 if (file_exists($cachefile) && (time() - $cachetime
+         < filemtime($cachefile))) 
+      {
+         include($cachefile);
+         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." 
+         -->";
+         exit;
+      }
+      ob_start(); // start the output buffer
+}  
+	  
+	  elseif ((osc_is_search_page())&&(osc_get_preference('search_cache', 'plugincache')== 'active')&&(!osc_show_flash_message())) {
+		  function t(&$a, &$d) {
+    $a = osc_search_region();
+  //  $b = osc_search_city();
+//	$c = osc_search_pattern();
+	$dcat = osc_search_category();
+	foreach($dcat as $dca) {
+		$d = osc_category_name();}
+}
+t($a,$d);
+
+if ($a == ''){
+$cachetitle = $d ; 
+	  } elseif ($d == '') {
+		  $cachetitle = $a ; 
+	  } else {
+		  $cachetitle = $a.'_'.$d ; 
+	  }
+	  if ($cachetitle != '') {
+	    
+      $cachefile = osc_get_preference('upload_path', 'plugincache')."search/".$cachetitle.".html";  
+	  $cachetime = osc_get_preference('search_time', 'plugincache')*3600; 
+	  
+	  // Serve from the cache if it is younger than $cachetime
+      if (file_exists($cachefile) && (time() - $cachetime
+         < filemtime($cachefile))) 
+      {
+         include($cachefile);
+         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." 
+         -->";
+         exit;
+      }
+      ob_start(); // start the output buffer
+                      }
+                   }
+               }
+	       }
+	    }
+     }
+
+if(!function_exists('cache_end')) {
+function cache_end() {
+if( osc_is_home_page() || osc_is_ad_page() || osc_is_search_page() || osc_is_static_page()  ) {
+	if(!osc_is_web_user_logged_in()) {
+     
+	 if ((osc_is_ad_page())&&(osc_get_preference('item_cache', 'plugincache')== 'active')&&(!osc_item_is_spam())&&(osc_item_is_active())&&(osc_item_is_enabled())&&(!osc_show_flash_message())) {
+		 $ItemStorageFolder = osc_get_preference('item_storage_folder', 'plugincache') ;
+      $PubbDate = osc_item_pub_date();
+     $DatePubb = date_create($PubbDate); 
+     $cachePubbDate = date_format($DatePubb, $ItemStorageFolder);
+      $cachetitle = osc_item_id();  
+      $cachefile = osc_get_preference('upload_path', 'plugincache')."item/".$cachePubbDate."/".$cachetitle.".html"; 
+	  $cachetime = osc_get_preference('item_time', 'plugincache')*3600; 
+	  if (file_exists($cachefile) && (time() - $cachetime
+         < filemtime($cachefile))) 
+      {
+         include($cachefile);
+         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." 
+         -->";
+         exit;
+      }
+	  @mkdir(osc_get_preference('upload_path', 'plugincache')."item/".$cachePubbDate."/", 0777, true);
+       // open the cache file for writing
+       $fp = fopen($cachefile, 'w'); 
+
+
+       // save the contents of output buffer to the file
+     fwrite($fp, ob_get_contents());
+
+  // close the file
+
+        fclose($fp); 
+
+  // Send the output to the browser
+        ob_end_flush();
+	  }
+	  
+	  elseif ((osc_is_static_page())&&(osc_get_preference('static_cache', 'plugincache')== 'active')&&(!osc_show_flash_message())) {
+		  osc_reset_static_pages();
+		  while( osc_has_static_pages() ) {
+		  $cachetitle = osc_static_page_title();  }
+		  osc_reset_static_pages();
+      $cachefile = osc_get_preference('upload_path', 'plugincache')."static/".$cachetitle.".html"; 
+	  $cachetime = osc_get_preference('static_time', 'plugincache')*3600;
+	  if (file_exists($cachefile) && (time() - $cachetime
+         < filemtime($cachefile))) 
+      {
+         include($cachefile);
+         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." 
+         -->";
+         exit;
+      }
+	  @mkdir(osc_get_preference('upload_path', 'plugincache')."static/", 0777, true);
+       // open the cache file for writing
+       $fp = fopen($cachefile, 'w'); 
+
+
+       // save the contents of output buffer to the file
+     fwrite($fp, ob_get_contents());
+
+  // close the file
+
+        fclose($fp); 
+
+  // Send the output to the browser
+        ob_end_flush(); }
+	  
+	elseif ((osc_is_home_page())&&(osc_get_preference('main_cache', 'plugincache')== 'active')&&(!osc_show_flash_message())) {
+	  $cachefile = osc_get_preference('upload_path', 'plugincache')."main/cache.html";
+      $cachetime = osc_get_preference('main_time', 'plugincache')*3600;
+	  if (file_exists($cachefile) && (time() - $cachetime
+         < filemtime($cachefile))) 
+      {
+         include($cachefile);
+         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." 
+         -->";
+         exit;
+      }
+	  @mkdir(osc_get_preference('upload_path', 'plugincache')."main/", 0777, true);
+       // open the cache file for writing
+       $fp = fopen($cachefile, 'w'); 
+
+
+       // save the contents of output buffer to the file
+     fwrite($fp, ob_get_contents());
+
+  // close the file
+
+        fclose($fp); 
+
+  // Send the output to the browser
+        ob_end_flush(); }
+	  
+	  elseif ((osc_is_search_page())&&(osc_get_preference('search_cache', 'plugincache')== 'active')&&(!osc_show_flash_message())) {
+		  if(!function_exists('t')) {
+		  function t(&$a, &$d) {
+    $a = osc_search_region();
+  //  $b = osc_search_city();
+//	$c = osc_search_pattern();
+	$dcat = osc_search_category();
+	foreach($dcat as $dca) {
+		$d = osc_category_name();}
+}}
+t($a,$d);
+if ($a == ''){
+$cachetitle = $d ; 
+	  } elseif ($d == '') {
+		  $cachetitle = $a ; 
+	  } else {
+		  $cachetitle = $a.'_'.$d ; 
+	  }
+	    if ($cachetitle != '') {
+      $cachefile = osc_get_preference('upload_path', 'plugincache')."search/".$cachetitle.".html";  
+	  $cachetime = osc_get_preference('search_time', 'plugincache')*3600;
+	  if (file_exists($cachefile) && (time() - $cachetime
+         < filemtime($cachefile))) 
+      {
+         include($cachefile);
+         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." 
+         -->";
+         exit;
+      }
+	  @mkdir(osc_get_preference('upload_path', 'plugincache')."search/", 0777, true);
+       // open the cache file for writing
+       $fp = fopen($cachefile, 'w'); 
+
+
+       // save the contents of output buffer to the file
+     fwrite($fp, ob_get_contents());
+
+  // close the file
+
+        fclose($fp); 
+
+  // Send the output to the browser
+        ob_end_flush(); }}
+	  
+	  
+      // Serve from the cache if it is younger than $cachetime
+          }
+		}
+	 }
+  }
+		
+		
+	
+	function plugincache_add_comment($item) {
+		$ItemStorageFolder = osc_get_preference('item_storage_folder', 'plugincache') ;
+		$PubbDate = osc_item_pub_date($item);
+     $DatePubb = date_create($PubbDate); 
+     $cachePubbDate = date_format($DatePubb, $ItemStorageFolder);
+		$IdItem = osc_item_id($item);
+       $files = rglob(osc_get_preference('upload_path', 'plugincache')."item/".$cachePubbDate."/".$IdItem.".html");
+        foreach($files as $f) {
+            @unlink($f);
+        }
+    }
+  
+ function plugincache_item_edit_post($item) {
+	 $ItemStorageFolder = osc_get_preference('item_storage_folder', 'plugincache') ;
+	 $PubbDate = osc_item_pub_date($item);
+     $DatePubb = date_create($PubbDate); 
+     $cachePubbDate = date_format($DatePubb, $ItemStorageFolder);
+			$IdItem = osc_item_id($item);
+       $files = rglob(osc_get_preference('upload_path', 'plugincache')."item/".$cachePubbDate."/".$IdItem.".html");
+        foreach($files as $f) {
+            @unlink($f);
+        }
+	}
+	
+	function plugincache_delete_item($id) {
+		$ItemStorageFolder = osc_get_preference('item_storage_folder', 'plugincache') ;
+		$PubbDate = osc_item_pub_date($id);
+     $DatePubb = date_create($PubbDate); 
+     $cachePubbDate = date_format($DatePubb, $ItemStorageFolder);
+		$files = rglob(osc_get_preference('upload_path', 'plugincache')."item/".$cachePubbDate."/".$id.".html");
+        foreach($files as $f) {
+            @unlink($f);
+        }
+		$files = rglob(osc_get_preference('upload_path', 'plugincache')."search/*");
+        foreach($files as $f) {
+            @unlink($f);
+        }
+		$files = rglob(osc_get_preference('upload_path', 'plugincache')."main/*");
+        foreach($files as $f) {
+            @unlink($f);
+           }
+		}
+				
+		function plugincache_posted_item(){
+			$files = rglob(osc_get_preference('upload_path', 'plugincache')."search/*");
+        foreach($files as $f) {
+            @unlink($f);
+        }
+		$files = rglob(osc_get_preference('upload_path', 'plugincache')."main/*");
+        foreach($files as $f) {
+            @unlink($f);
+        }
+	}
+		
+		function plugincache_clear_item() {
+        $files = rglob(osc_get_preference('upload_path', 'plugincache')."item/");
+        foreach($files as $f) {
+             recursiveRemove($f);
+        }
+    }
+	
+	function plugincache_clear_static() {
+        $files = rglob(osc_get_preference('upload_path', 'plugincache')."static/*");
+        foreach($files as $f) {
+            @unlink($f);
+        }
+    }
+	
+	function plugincache_clear_search() {
+        $files = rglob(osc_get_preference('upload_path', 'plugincache')."search/*");
+        foreach($files as $f) {
+            @unlink($f);
+        }
+    }
+		
+		function plugincache_clear_main() {
+        $files = rglob(osc_get_preference('upload_path', 'plugincache')."main/*");
+        foreach($files as $f) {
+            @unlink($f);
+        }
+    }
+	
+	function plugincache_edit_comment($id) {
+		$conn = getConnection();
+        $ItemIds = $conn->osc_dbFetchResult("SELECT fk_i_item_id FROM %st_item_comment WHERE pk_i_id = %d", DB_TABLE_PREFIX, $id);
+		$ItemId = $ItemIds['fk_i_item_id'];
+		$PubbDate = osc_item_pub_date($ItemId['fk_i_item_id']);
+     $DatePubb = date_create($PubbDate); 
+     $cachePubbDate = date_format($DatePubb, 'Y-m-d');
+	 $files = rglob(osc_get_preference('upload_path', 'plugincache')."item/".$cachePubbDate."/".$ItemId.".html");
+        foreach($files as $f) {
+            @unlink($f);
+           }
+		}
+	
+		
+		function plugincache_admin_menu() {
+        echo '<h3><a href="#">Plugin Cache</a></h3>
+        <ul> 
+            <li><a href="' . osc_admin_render_plugin_url(osc_plugin_folder(__FILE__) . 'conf.php') . '">&raquo; ' . __('Settings', 'plugincache') . '</a></li>
+            <li><a href="' . osc_admin_render_plugin_url(osc_plugin_folder(__FILE__) . 'help.php') . '">&raquo; ' . __('Help', 'plugincache') . '</a></li>
+        </ul>';
+    }
+	
+	/**
+     * ADD HOOKS
+     */
+    osc_register_plugin(osc_plugin_path(__FILE__), 'plugincache_install');
+    osc_add_hook(osc_plugin_path(__FILE__)."_uninstall", 'plugincache_uninstall');
+	
+	// hooks for create cache
+	osc_add_hook('before_html', 'cache_start');
+	osc_add_hook('after_html', 'cache_end');
+	
+	// clear cahe after item actions
+	if(osc_version()<320) {
+		osc_add_hook('item_edit_post', 'plugincache_item_edit_post');
+         } else {
+        osc_add_hook('edited_item', 'plugincache_item_edit_post');
+	    }
+		
+		if(osc_version()<320) {
+		osc_add_hook('item_form_post', 'plugincache_posted_item');
+		} else {
+			osc_add_hook('posted_item', 'plugincache_posted_item');
+	}
+		osc_add_hook('activate_item', 'plugincache_delete_item');
+        osc_add_hook('deactivate_item', 'plugincache_delete_item');
+        osc_add_hook('enable_item', 'plugincache_delete_item');
+        osc_add_hook('disable_item', 'plugincache_delete_item');
+		osc_add_hook('delete_item', 'plugincache_delete_item');
+		osc_add_hook('item_spam_on', 'plugincache_delete_item');
+		osc_add_hook('item_spam_off', 'plugincache_delete_item');
+		
+		// clear cache after comment
+		osc_add_hook('add_comment', 'plugincache_add_comment');
+		osc_add_hook('activate_comment', 'plugincache_edit_comment');
+        osc_add_hook('deactivate_comment', 'plugincache_edit_comment');
+        osc_add_hook('enable_comment', 'plugincache_edit_comment');
+        osc_add_hook('disable_comment', 'plugincache_edit_comment');
+        osc_add_hook('delete_comment', 'plugincache_edit_comment');
+		
+		// FANCY MENU
+		
+		osc_add_hook('admin_menu', 'plugincache_admin_menu');
+    
+		
+    
 ?>
-
-
-
-
-<div id="settings_form" style="border: 1px solid #ccc; background: #eee; ">
-    <div style="padding: 20px;">
-        <div style="float: left; width: 100%;">
-        <table width="100%">
-<tr>
-<td width="30%">
-            <fieldset>
-                <legend style="font-size:18px; font-weight:bold; "><?php _e('Plugin Cache Settings', 'plugincache'); ?></legend>
-                <p>&nbsp;</p>
-                <form name="plugincache_form" id="plugincache_form" action="<?php echo osc_admin_base_url(true); ?>" method="POST" enctype="multipart/form-data" >
-                    <div style="float: left; width: 100%;">
-                    <input type="hidden" name="page" value="plugins" />
-                    <input type="hidden" name="action" value="renderplugin" />
-                    <input type="hidden" name="file" value="<?php echo osc_plugin_folder(__FILE__); ?>conf.php" />
-                    <input type="hidden" name="plugin_action" value="done" />
-                    <label for="main_cache"><?php _e('Cache For Main Page', 'plugincache'); ?></label><br/>
-                    <?php $selectMainCache = osc_get_preference('main_cache', 'plugincache') ; ?>
-                    <input type="radio" name="main_cache" id="main_cache" value="active" <?php if ($selectMainCache=='active') { echo ' checked'; } ?> /><span>Active</span>
-                    <input type="radio" name="main_cache" id="main_cache" value="inactive" <?php if ($selectMainCache=='inactive') { echo ' checked'; } ?> /><span>Inactive</span>
-                    <br/><br/>
-                    <label for="item_cache"><?php _e('Cache For Item Page', 'plugincache'); ?></label><br/>
-                    <?php $selectItemCache = osc_get_preference('item_cache', 'plugincache') ; ?>
-                    <input type="radio" name="item_cache" id="item_cache" value="active" <?php if ($selectItemCache=='active') { echo ' checked'; } ?> /><span>Active</span>
-                    <input type="radio" name="item_cache" id="item_cache" value="inactive" <?php if ($selectItemCache=='inactive') { echo ' checked'; } ?> /><span>Inactive</span>
-                    <br/><br/>
-                    <label for="search_cache"><?php _e('Cache For Search Page', 'plugincache'); ?></label><br/>
-                    <?php $selectSearchCache = osc_get_preference('search_cache', 'plugincache') ; ?>
-                    <input type="radio" name="search_cache" id="search_cache" value="active" <?php if ($selectSearchCache=='active') { echo ' checked'; } ?> /><span>Active</span>
-                    <input type="radio" name="search_cache" id="search_cache" value="inactive" <?php if ($selectSearchCache=='inactive') { echo ' checked'; } ?> /><span>Inactive</span>
-                    <br/><br/>
-                    <label for="static_cache"><?php _e('Cache For Static Page', 'plugincache'); ?></label><br/>
-                    <?php $selectStaticCache = osc_get_preference('static_cache', 'plugincache') ; ?>
-                    <input type="radio" name="static_cache" id="static_cache" value="active" <?php if ($selectStaticCache=='active') { echo ' checked'; } ?> /><span>Active</span>
-                    <input type="radio" name="static_cache" id="static_cache" value="inactive" <?php if ($selectStaticCache=='inactive') { echo ' checked'; } ?> /><span>Inactive</span>
-                    <p>&nbsp;</p>
-                        <label for="main_time"><?php _e('Time before re-generation of cache<br/>files for main page (In Hours)', 'plugincache'); ?></label>
-                        <br/>
-                        <input type="text" name="main_time" id="main_time" value="<?php echo osc_get_preference('main_time', 'plugincache'); ?>"/>
-                        <br/><br/>
-                        <label for="search_time"><?php _e('Time before re-generation of cache<br/>files for search results (In Hours) ', 'plugincache'); ?></label>
-                        <br/>
-                        <input type="text" name="search_time" id="search_time" value="<?php echo osc_get_preference('search_time', 'plugincache'); ?>"/>
-                        <br/><br/>
-                        <label for="item_time"><?php _e('Time before re-generation of cache files<br/>for item\'s page (In Hours)', 'plugincache'); ?></label>
-                        <br/>
-                        <input type="text" name="item_time" id="item_time" value="<?php echo osc_get_preference('item_time', 'plugincache'); ?>"/>
-                        <br/><br/>
-                        <label for="static_time"><?php _e('Time before re-generation of cache<br/>files for static pages (In Hours)', 'plugincache'); ?></label>
-                        <br/>
-                        <input type="text" name="static_time" id="static_time" value="<?php echo osc_get_preference('static_time', 'plugincache'); ?>"/>
-                        <br/>
-                       <p> <button style="font-size:16px; font-weight:bold;" type="submit" ><?php _e('Update', 'plugincache');?></button></p>
-
-                    <br/>
-
-                </form>
-            </fieldset>
-           </td>
-           <td align="center" style=" float:right; margin-right:200px; border:2px solid #000; border-radius:5px; padding:15px;">
-                <p style=" font-size:16px; font-weight:bold">Delete Cached Files</p>
-        <form name="plugincache_form" id="plugincache_form" action="<?php echo osc_admin_base_url(true); ?>" method="POST" enctype="multipart/form-data" >
-
-                        <input type="hidden" name="page" value="plugins" />
-                        <input type="hidden" name="action" value="renderplugin" />
-                        <input type="hidden" name="file" value="<?php echo osc_plugin_folder(__FILE__); ?>conf.php" />
-                        <input type="hidden" name="plugin_action" value="clear" />
-                        <p>
-                            <?php _e('Select the elements you want to clear from cache', 'plugincache'); ?>
-                        </p>
-        <table>
-	        <tr style="vertical-align: top;">
-				<td>
-					<span><?php _e("Item Pages"); ?></span>
-				</td>
-			</tr>
-			<tr style="vertical-align: top;">
-				<td>
-					<input type="checkbox" name="item" value="1" >
-					<span><?php _e("Clear cache of item pages"); ?></span><br/><br/>
-				</td>
-			</tr>
-			<tr style="vertical-align: top;">
-				<td>
-					<span><?php _e("Main Page"); ?></span>
-				</td>
-			</tr>
-			<tr style="vertical-align: top;">
-				<td>
-					<input type="checkbox" name="main" value="1" >
-					<span><?php _e("Clear cache of main page"); ?></span><br/><br/>
-				</td>
-			</tr>
-			<tr style="vertical-align: top;">
-				<td>
-					<span><?php _e("Search Pages"); ?></span>
-				</td>
-			</tr>
-			<tr style="vertical-align: top;">
-				<td>
-					<input type="checkbox" name="search" value="1" >
-					<span><?php _e("Clear cache of searh pages"); ?></span><br/><br/>
-				</td>
-			</tr>
-			<tr style="vertical-align: top;">
-				<td>
-					<span><?php _e("Static Pages"); ?></span>
-				</td>
-			</tr>
-			<tr style="vertical-align: top;">
-				<td>
-					<input type="checkbox" name="static" value="1" >
-					<span><?php _e("Clear cache of static pages"); ?></span>
-				</td>
-			</tr>
-		</table>
-
-        <p><button style="font-size:16px; font-weight:bold;" type="submit" ><?php _e('Clear Cahe', 'plugincache');?></button></p>
-        </form>
-
-
-          </td> </tr></table>
-        		</div>	</div>			<div style="clear:both;"></div>	</div>
-
