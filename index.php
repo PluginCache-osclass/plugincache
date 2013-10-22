@@ -3,7 +3,7 @@
 Plugin Name: Plugin Cache
 Plugin URI: http://www.osclass.org/
 Description: Cache system for OSClass, make your web load faster!
-Version: 1.0.0
+Version: 2.0.0
 Author: OSClass
 Author URI: http://www.osclass.org/
 Short Name: plugincache
