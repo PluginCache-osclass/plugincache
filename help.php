@@ -37,8 +37,11 @@
                 <h3>Clean the cache folders</h3>
                 <p>You can also delete the files in each one of the folders in the plugin setting. It will show a list with de deleted files if any.</p>
                 <br/>
-                <h3>IMPORTANT</h3>
-                <p>When you install the plugin, it will add the folders for the cahe and 4 php files in your root directory (used to delete the cache files from plugin settings).If you don't like the plugin or if is not working for you, make sure to uninstall it, do not simply delete the folder with ftp. Uninstalling the plugin will delete all the added folders and files and leave you site clean.</p>
+                <h3>Storage of items cache</h3>
+                <p>The cache of ads is stored in subfolders based on ad pubblication date</p>
+                <br/>
+                <h3>Setting the item cache</h3>
+                <p>From plugin setting you can choose how the subfolder are created: by year, by month or by day</p>
             </fieldset>
         </div>
         <div style="clear: both;"></div>										
