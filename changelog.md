@@ -1,3 +1,7 @@
+Plugin Cache 2.0.2 for Osclass
+- Added a function that clear all cache files when plugin is disabled.
+- Added a configure link in the plugin admin table.
+
 Plugin Cache 2.0.1 for Osclass
 - fix minor bugs
 - added option to enable or disable the function "clear cache after new item is posted"
