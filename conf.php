@@ -119,7 +119,7 @@
                                                                 </div>
 
                                                                 <div>
-                                                                        <p style="font-weight:700;">Regeneration Intervals</p>
+                                                                        <p style="font-weight:700;"><?php _e('Regeneration Intervals', 'plugincache'); ?></p>
                                                                         <label for="main_time"><?php _e('Time before re-generation of cache<br/>files for main page (In Hours)', 'plugincache'); ?></label>
                                                                                 <br/>
                                                                         <input type="text" name="main_time" id="main_time" value="<?php echo osc_get_preference('main_time', 'plugincache'); ?>"/>
