@@ -42,6 +42,9 @@
                 <br/>
                 <h3>Setting the item cache</h3>
                 <p>From plugin setting you can choose how the subfolder are created: by year, by month or by day</p>
+                <br/>
+                <h3>Clear the cache in main and search folders when a new ad is posted</h3>
+                <p>From plugin setting you have the option to enable or disable this function. Useful if your site has high traffic and many new ads posted daily</p> 
             </fieldset>
         </div>
         <div style="clear: both;"></div>										
