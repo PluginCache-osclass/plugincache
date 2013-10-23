@@ -1,3 +1,6 @@
+Plugin Cache 2.0.3 for Osclass
+- conf.php and help.php moved into admin subfolder
+
 Plugin Cache 2.0.2 for Osclass
 - Added a function that clear all cache files when plugin is disabled.
 - Added a configure link in the plugin admin table.
