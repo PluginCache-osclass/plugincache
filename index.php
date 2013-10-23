@@ -403,7 +403,7 @@ $cachetitle = $d ;
                 }
 	// This can be removed once we no longer support Osclass 310 and older.
     function plugincache_admin_menu_old() {
-        echo '<h3><a href="#">Plugin Cache</a></h3>
+        echo '<h3><a href="#">Cache Plugin</a></h3>
         <ul>
             <li><a href="' . osc_admin_render_plugin_url(osc_plugin_folder(__FILE__) . 'admin/conf.php') . '">&raquo; ' . __('Settings', 'plugincache') . '</a></li>
             <li><a href="' . osc_admin_render_plugin_url(osc_plugin_folder(__FILE__) . 'admin/help.php') . '">&raquo; ' . __('Help', 'plugincache') . '</a></li>
@@ -411,7 +411,7 @@ $cachetitle = $d ;
     }
 
     function plugincache_admin_menu() {
-		osc_add_admin_submenu_divider( 'plugins', 'Plugin Cache', 'plugincache', $capability = null);
+		osc_add_admin_submenu_divider( 'plugins', 'Cache Plugin', 'plugincache', $capability = null);
 		osc_admin_menu_plugins( __('Settings', 'plugincache'), osc_admin_render_plugin_url(osc_plugin_folder(__FILE__) . 'admin/conf.php'), 'plugincache-setings', $capability = null, $icon_url = null );
 		osc_admin_menu_plugins( __('Help', 'plugincache'), osc_admin_render_plugin_url(osc_plugin_folder(__FILE__) . 'admin/help.php'), 'plugincache-help', $capability = null, $icon_url = null );
 	}
