@@ -3,7 +3,7 @@
 Plugin Name: Plugin Cache
 Plugin URI: http://www.osclass.org/
 Description: Cache system for OSClass, make your web load faster!
-Version: 2.0.2
+Version: 2.0.3
 Author: OSClass
 Author URI: http://www.osclass.org/
 Short Name: plugincache
@@ -30,31 +30,31 @@ function recursiveRemove($dir) {
     function plugincache_install() {
 		@mkdir(osc_content_path().'uploads/cache_files/', 0777, true);
 
-		osc_set_preference('upload_path', osc_content_path().'uploads/cache_files/', 'plugincache', 'STRING');
-		osc_set_preference('main_time', '1', 'plugincache', 'INTEGER');
-        osc_set_preference('search_time', '1', 'plugincache', 'INTEGER');
-        osc_set_preference('item_time', '24', 'plugincache', 'INTEGER');
-		osc_set_preference('static_time', '24', 'plugincache', 'INTEGER');
-		osc_set_preference('main_cache', 'active', 'plugincache', 'INTEGER');
-		osc_set_preference('item_cache', 'active', 'plugincache', 'INTEGER');
-		osc_set_preference('search_cache', 'active', 'plugincache', 'INTEGER');
-		osc_set_preference('static_cache', 'active', 'plugincache', 'INTEGER');
-		osc_set_preference('posted_item_clean_cache', 'active', 'plugincache', 'INTEGER');
-		osc_set_preference('item_storage_folder', 'Y-m-d', 'plugincache', 'STRING');
+	osc_set_preference('upload_path', osc_content_path().'uploads/cache_files/', 'plugincache', 'STRING');
+	osc_set_preference('main_time', '1', 'plugincache', 'INTEGER');
+	osc_set_preference('search_time', '1', 'plugincache', 'INTEGER');
+	osc_set_preference('item_time', '24', 'plugincache', 'INTEGER');
+	osc_set_preference('static_time', '24', 'plugincache', 'INTEGER');
+	osc_set_preference('main_cache', 'active', 'plugincache', 'INTEGER');
+	osc_set_preference('item_cache', 'active', 'plugincache', 'INTEGER');
+	osc_set_preference('search_cache', 'active', 'plugincache', 'INTEGER');
+	osc_set_preference('static_cache', 'active', 'plugincache', 'INTEGER');
+	osc_set_preference('posted_item_clean_cache', 'active', 'plugincache', 'INTEGER');
+	osc_set_preference('item_storage_folder', 'Y-m-d', 'plugincache', 'STRING');
     }
 
     function plugincache_uninstall() {
-        osc_delete_preference('upload_path', 'plugincache');
-        osc_delete_preference('search_time', 'plugincache');
-        osc_delete_preference('item_time', 'plugincache');
-        osc_delete_preference('main_time', 'plugincache');
-		osc_delete_preference('static_time', 'plugincache');
-		osc_delete_preference('main_cache', 'plugincache');
-		osc_delete_preference('item_cache', 'plugincache');
-		osc_delete_preference('search_cache', 'plugincache');
-		osc_delete_preference('static_cache', 'plugincache');
-		osc_delete_preference('posted_item_clean_cache', 'plugincache');
-		osc_delete_preference('item_storage_folder', 'plugincache');
+	osc_delete_preference('upload_path', 'plugincache');
+	osc_delete_preference('search_time', 'plugincache');
+	osc_delete_preference('item_time', 'plugincache');
+	osc_delete_preference('main_time', 'plugincache');
+	osc_delete_preference('static_time', 'plugincache');
+	osc_delete_preference('main_cache', 'plugincache');
+	osc_delete_preference('item_cache', 'plugincache');
+	osc_delete_preference('search_cache', 'plugincache');
+	osc_delete_preference('static_cache', 'plugincache');
+	osc_delete_preference('posted_item_clean_cache', 'plugincache');
+	osc_delete_preference('item_storage_folder', 'plugincache');
 
         $dir = osc_content_path().'uploads/cache_files/'; // IMPORTANT: with '/' at the end
         recursiveRemove($dir);
