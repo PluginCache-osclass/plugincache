@@ -1,6 +1,6 @@
 plugincache
 ===========
-version 2.0.0
+version 2.0.1
 
 Plugin Cache is an improved version of Simple Cache plugin for Osclass.
 Plugin renders php files into static html files, reducing server response and page loading times.
