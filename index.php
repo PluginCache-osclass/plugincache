@@ -2,7 +2,7 @@
 /*
 Plugin Name: Cache Plugin
 Plugin URI: http://www.osclass.org/
-Description: Cache system for OSClass, make your web load faster!
+Description: Cache system for OSClass, make your website load faster!
 Version: 2.0.3
 Author: OSClass
 Author URI: http://www.osclass.org/
