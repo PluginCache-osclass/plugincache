@@ -28,38 +28,36 @@ function recursiveRemove($dir) {
 }
 
     function plugincache_install() {
-                @mkdir(osc_content_path().'uploads/cache_files/', 0777, true);
-                $conn= getConnection();
-        osc_set_preference('upload_path', osc_content_path().'uploads/cache_files/', 'plugincache', 'STRING');
-                osc_set_preference('main_time', '1', 'plugincache', 'INTEGER');
+		@mkdir(osc_content_path().'uploads/cache_files/', 0777, true);
+
+		osc_set_preference('upload_path', osc_content_path().'uploads/cache_files/', 'plugincache', 'STRING');
+		osc_set_preference('main_time', '1', 'plugincache', 'INTEGER');
         osc_set_preference('search_time', '1', 'plugincache', 'INTEGER');
         osc_set_preference('item_time', '24', 'plugincache', 'INTEGER');
-                osc_set_preference('static_time', '24', 'plugincache', 'INTEGER');
-                osc_set_preference('main_cache', 'active', 'plugincache', 'INTEGER');
-                osc_set_preference('item_cache', 'active', 'plugincache', 'INTEGER');
-                osc_set_preference('search_cache', 'active', 'plugincache', 'INTEGER');
-                osc_set_preference('static_cache', 'active', 'plugincache', 'INTEGER');
-				osc_set_preference('posted_item_clean_cache', 'active', 'plugincache', 'INTEGER');
-                osc_set_preference('item_storage_folder', 'Y-m-d', 'plugincache', 'STRING');
-        $conn->commit();
+		osc_set_preference('static_time', '24', 'plugincache', 'INTEGER');
+		osc_set_preference('main_cache', 'active', 'plugincache', 'INTEGER');
+		osc_set_preference('item_cache', 'active', 'plugincache', 'INTEGER');
+		osc_set_preference('search_cache', 'active', 'plugincache', 'INTEGER');
+		osc_set_preference('static_cache', 'active', 'plugincache', 'INTEGER');
+		osc_set_preference('posted_item_clean_cache', 'active', 'plugincache', 'INTEGER');
+		osc_set_preference('item_storage_folder', 'Y-m-d', 'plugincache', 'STRING');
     }
 
     function plugincache_uninstall() {
-                $conn= getConnection();
         osc_delete_preference('upload_path', 'plugincache');
         osc_delete_preference('search_time', 'plugincache');
         osc_delete_preference('item_time', 'plugincache');
         osc_delete_preference('main_time', 'plugincache');
-                osc_delete_preference('static_time', 'plugincache');
-                osc_delete_preference('main_cache', 'plugincache');
-                osc_delete_preference('item_cache', 'plugincache');
-                osc_delete_preference('search_cache', 'plugincache');
-                osc_delete_preference('static_cache', 'plugincache');
-				osc_delete_preference('posted_item_clean_cache', 'plugincache');
-                osc_delete_preference('item_storage_folder', 'plugincache');
-        $conn->commit();
+		osc_delete_preference('static_time', 'plugincache');
+		osc_delete_preference('main_cache', 'plugincache');
+		osc_delete_preference('item_cache', 'plugincache');
+		osc_delete_preference('search_cache', 'plugincache');
+		osc_delete_preference('static_cache', 'plugincache');
+		osc_delete_preference('posted_item_clean_cache', 'plugincache');
+		osc_delete_preference('item_storage_folder', 'plugincache');
+
         $dir = osc_content_path().'uploads/cache_files/'; // IMPORTANT: with '/' at the end
-           recursiveRemove($dir);
+        recursiveRemove($dir);
     }
 
 if(!function_exists('cache_start')) {
@@ -164,13 +162,13 @@ if( osc_is_home_page() || osc_is_ad_page() || osc_is_search_page() || osc_is_sta
         if(!osc_is_web_user_logged_in()) {
 
          if ((osc_is_ad_page())&&(osc_get_preference('item_cache', 'plugincache')== 'active')&&(!osc_item_is_spam())&&(osc_item_is_active())&&(osc_item_is_enabled())&&(!osc_show_flash_message())) {
-                 $ItemStorageFolder = osc_get_preference('item_storage_folder', 'plugincache') ;
-      $PubbDate = osc_item_pub_date();
-     $DatePubb = date_create($PubbDate);
-     $cachePubbDate = date_format($DatePubb, $ItemStorageFolder);
-      $cachetitle = osc_item_id();
-      $cachefile = osc_get_preference('upload_path', 'plugincache')."item/".$cachePubbDate."/".$cachetitle.".html";
-          $cachetime = osc_get_preference('item_time', 'plugincache')*3600;
+			$ItemStorageFolder = osc_get_preference('item_storage_folder', 'plugincache') ;
+			$PubbDate = osc_item_pub_date();
+			$DatePubb = date_create($PubbDate);
+			$cachePubbDate = date_format($DatePubb, $ItemStorageFolder);
+			$cachetitle = osc_item_id();
+			$cachefile = osc_get_preference('upload_path', 'plugincache')."item/".$cachePubbDate."/".$cachetitle.".html";
+			$cachetime = osc_get_preference('item_time', 'plugincache')*3600;
           if (file_exists($cachefile) && (time() - $cachetime
          < filemtime($cachefile)))
       {
@@ -383,13 +381,13 @@ $cachetitle = $d ;
             @unlink($f);
         }
     }
-	
+
 	            function plugincache_clear_all() {
 				plugincache_clear_item();
 				plugincache_clear_static();
 				plugincache_clear_search();
 				plugincache_clear_main();
-		}	   
+		}
 
         function plugincache_edit_comment($id) {
                 $conn = getConnection();
@@ -434,7 +432,7 @@ $cachetitle = $d ;
          } else {
         osc_add_hook('edited_item', 'plugincache_item_edit_post');
             }
-			
+
         if (osc_get_preference('posted_item_clean_cache', 'plugincache')== 'active') {
                 if(osc_version()<320) {
                 osc_add_hook('item_form_post', 'plugincache_posted_item');
@@ -442,7 +440,7 @@ $cachetitle = $d ;
                         osc_add_hook('posted_item', 'plugincache_posted_item');
         	}
 	}
-	
+
 	osc_add_hook('activate_item', 'plugincache_delete_item');
 	osc_add_hook('deactivate_item', 'plugincache_delete_item');
 	osc_add_hook('enable_item', 'plugincache_delete_item');
