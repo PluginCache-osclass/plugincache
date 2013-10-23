@@ -50,7 +50,7 @@
 
 <div>
 	<div id="settings_form" style="width:100%; height:30px; padding:5px; border:1px solid #CCC; border-radius:5px; background:#EEE; font-size:18px; font-weight:bold;">
-													<legend><?php _e('Plugin Cache Settings', 'plugincache'); ?></legend>
+													<legend><?php _e('Cache Plugin Settings', 'plugincache'); ?></legend>
 	</div>
 
 	<div style="padding:10px 10px 10px 0px;">
