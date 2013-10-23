@@ -14,7 +14,8 @@ Features
 - automatic regeneration each time user visits page if present any changes
 - search page cache is only for categories and regions (no pattern and cities caching)
 - dynamic updates of cached pages:
-  - when an ad is posted or deleted, search and main cache is cleaned
+  - when a new ad is posted, search and main cache is cleaned (option to disable it)
+  - when an ad deleted, search and main cache is cleaned
   - any modifications to the ad, such as editing the ad or adding a comment or deactivate etc, will clean the ad cache
 - item cache folder now has subfolders (item pubblication date)
 - user can choose how to create the subfolders for items (by day, by month, by year)
