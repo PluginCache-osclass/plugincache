@@ -402,16 +402,14 @@ $cachetitle = $d ;
            }
                 }
 
-                function plugincache_admin_menu() {
-        echo '<h3><a href="#">Plugin Cache</a></h3>
-        <ul>
-            <li><a href="' . osc_admin_render_plugin_url(osc_plugin_folder(__FILE__) . 'conf.php') . '">&raquo; ' . __('Settings', 'plugincache') . '</a></li>
-            <li><a href="' . osc_admin_render_plugin_url(osc_plugin_folder(__FILE__) . 'help.php') . '">&raquo; ' . __('Help', 'plugincache') . '</a></li>
-        </ul>';
-    }
+    function plugincache_admin_menu_320() {
+		osc_add_admin_submenu_divider( 'plugins', 'Plugin Cache', 'plugincache', $capability = null);
+		osc_admin_menu_plugins( __('Settings', 'plugincache'), osc_admin_render_plugin_url(osc_plugin_folder(__FILE__) . 'admin/conf.php'), 'plugincache-setings', $capability = null, $icon_url = null );
+		osc_admin_menu_plugins( __('Help', 'plugincache'), osc_admin_render_plugin_url(osc_plugin_folder(__FILE__) . 'admin/help.php'), 'plugincache-help', $capability = null, $icon_url = null );
+	}
 
-	            function plugincache_admin_configure() {
-		osc_admin_render_plugin(osc_plugin_path(osc_plugin_folder(__FILE__)) . '/conf.php') ;
+	function plugincache_admin_configure() {
+		osc_admin_render_plugin(osc_plugin_path(osc_plugin_folder(__FILE__)) . 'admin/conf.php') ;
 	}
 
 	/**
@@ -458,6 +456,6 @@ $cachetitle = $d ;
 	osc_add_hook('delete_comment', 'plugincache_edit_comment');
 
 	// FANCY MENU
-	osc_add_hook('admin_menu', 'plugincache_admin_menu');
+	osc_add_hook('admin_menu', 'plugincache_admin_menu_320');
 
 ?>
