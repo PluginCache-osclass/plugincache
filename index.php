@@ -80,8 +80,7 @@ if( osc_is_home_page() || osc_is_ad_page() || osc_is_search_page() || osc_is_sta
          < filemtime($cachefile)))
       {
          include($cachefile);
-         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))."
-         -->";
+         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." -->";
          exit;
       }
       ob_start(); // start the output buffer
@@ -114,8 +113,7 @@ if( osc_is_home_page() || osc_is_ad_page() || osc_is_search_page() || osc_is_sta
          < filemtime($cachefile)))
       {
          include($cachefile);
-         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))."
-         -->";
+         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." -->";
          exit;
       }
       ob_start(); // start the output buffer
@@ -149,8 +147,7 @@ $cachetitle = $d ;
          < filemtime($cachefile)))
       {
          include($cachefile);
-         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))."
-         -->";
+         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." -->";
          exit;
       }
       ob_start(); // start the output buffer
@@ -178,8 +175,7 @@ if( osc_is_home_page() || osc_is_ad_page() || osc_is_search_page() || osc_is_sta
          < filemtime($cachefile)))
       {
          include($cachefile);
-         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))."
-         -->";
+         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." -->";
          exit;
       }
           @mkdir(osc_get_preference('upload_path', 'plugincache')."item/".$cachePubbDate."/", 0777, true);
@@ -238,8 +234,7 @@ if( osc_is_home_page() || osc_is_ad_page() || osc_is_search_page() || osc_is_sta
          < filemtime($cachefile)))
       {
          include($cachefile);
-         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))."
-         -->";
+         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." -->";
          exit;
       }
           @mkdir(osc_get_preference('upload_path', 'plugincache')."main/", 0777, true);
@@ -282,8 +277,7 @@ $cachetitle = $d ;
          < filemtime($cachefile)))
       {
          include($cachefile);
-         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))."
-         -->";
+         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." -->";
          exit;
       }
           @mkdir(osc_get_preference('upload_path', 'plugincache')."search/", 0777, true);
@@ -307,8 +301,6 @@ $cachetitle = $d ;
                 }
          }
   }
-
-
 
         function plugincache_add_comment($item) {
                 $ItemStorageFolder = osc_get_preference('item_storage_folder', 'plugincache') ;
@@ -412,7 +404,6 @@ $cachetitle = $d ;
            }
                 }
 
-
                 function plugincache_admin_menu() {
         echo '<h3><a href="#">Plugin Cache</a></h3>
         <ul>
@@ -420,17 +411,17 @@ $cachetitle = $d ;
             <li><a href="' . osc_admin_render_plugin_url(osc_plugin_folder(__FILE__) . 'help.php') . '">&raquo; ' . __('Help', 'plugincache') . '</a></li>
         </ul>';
     }
-	
+
 	            function plugincache_admin_configure() {
 		osc_admin_render_plugin(osc_plugin_path(osc_plugin_folder(__FILE__)) . '/conf.php') ;
 	}
 
-        /**
-     * ADD HOOKS
-     */
-    osc_register_plugin(osc_plugin_path(__FILE__), 'plugincache_install');
+	/**
+	 * ADD HOOKS
+	 */
+	osc_register_plugin(osc_plugin_path(__FILE__), 'plugincache_install');
 	osc_add_hook(osc_plugin_path(__FILE__)."_configure", 'plugincache_admin_configure');
-    osc_add_hook(osc_plugin_path(__FILE__)."_uninstall", 'plugincache_uninstall');
+	osc_add_hook(osc_plugin_path(__FILE__)."_uninstall", 'plugincache_uninstall');
 	osc_add_hook(osc_plugin_path(__FILE__) . "_disable", 'plugincache_clear_all');
 
         // hooks for create cache
@@ -449,29 +440,26 @@ $cachetitle = $d ;
                 osc_add_hook('item_form_post', 'plugincache_posted_item');
                 } else {
                         osc_add_hook('posted_item', 'plugincache_posted_item');
-        }
+        	}
 	}
 	
-                osc_add_hook('activate_item', 'plugincache_delete_item');
-        osc_add_hook('deactivate_item', 'plugincache_delete_item');
-        osc_add_hook('enable_item', 'plugincache_delete_item');
-        osc_add_hook('disable_item', 'plugincache_delete_item');
-                osc_add_hook('delete_item', 'plugincache_delete_item');
-                osc_add_hook('item_spam_on', 'plugincache_delete_item');
-                osc_add_hook('item_spam_off', 'plugincache_delete_item');
+	osc_add_hook('activate_item', 'plugincache_delete_item');
+	osc_add_hook('deactivate_item', 'plugincache_delete_item');
+	osc_add_hook('enable_item', 'plugincache_delete_item');
+	osc_add_hook('disable_item', 'plugincache_delete_item');
+	osc_add_hook('delete_item', 'plugincache_delete_item');
+	osc_add_hook('item_spam_on', 'plugincache_delete_item');
+	osc_add_hook('item_spam_off', 'plugincache_delete_item');
 
-                // clear cache after comment
-                osc_add_hook('add_comment', 'plugincache_add_comment');
-                osc_add_hook('activate_comment', 'plugincache_edit_comment');
-        osc_add_hook('deactivate_comment', 'plugincache_edit_comment');
-        osc_add_hook('enable_comment', 'plugincache_edit_comment');
-        osc_add_hook('disable_comment', 'plugincache_edit_comment');
-        osc_add_hook('delete_comment', 'plugincache_edit_comment');
+	// clear cache after comment
+	osc_add_hook('add_comment', 'plugincache_add_comment');
+	osc_add_hook('activate_comment', 'plugincache_edit_comment');
+	osc_add_hook('deactivate_comment', 'plugincache_edit_comment');
+	osc_add_hook('enable_comment', 'plugincache_edit_comment');
+	osc_add_hook('disable_comment', 'plugincache_edit_comment');
+	osc_add_hook('delete_comment', 'plugincache_edit_comment');
 
-                // FANCY MENU
-
-                osc_add_hook('admin_menu', 'plugincache_admin_menu');
-
-
+	// FANCY MENU
+	osc_add_hook('admin_menu', 'plugincache_admin_menu');
 
 ?>
