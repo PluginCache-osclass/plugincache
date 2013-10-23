@@ -3,7 +3,7 @@
 Plugin Name: Plugin Cache
 Plugin URI: http://www.osclass.org/
 Description: Cache system for OSClass, make your web load faster!
-Version: 2.0.1
+Version: 2.0.2
 Author: OSClass
 Author URI: http://www.osclass.org/
 Short Name: plugincache
@@ -391,6 +391,13 @@ $cachetitle = $d ;
             @unlink($f);
         }
     }
+	
+	            function plugincache_clear_all() {
+				plugincache_clear_item();
+				plugincache_clear_static();
+				plugincache_clear_search();
+				plugincache_clear_main();
+		}	   
 
         function plugincache_edit_comment($id) {
                 $conn = getConnection();
@@ -413,12 +420,18 @@ $cachetitle = $d ;
             <li><a href="' . osc_admin_render_plugin_url(osc_plugin_folder(__FILE__) . 'help.php') . '">&raquo; ' . __('Help', 'plugincache') . '</a></li>
         </ul>';
     }
+	
+	            function plugincache_admin_configure() {
+		osc_admin_render_plugin(osc_plugin_path(osc_plugin_folder(__FILE__)) . '/conf.php') ;
+	}
 
         /**
      * ADD HOOKS
      */
     osc_register_plugin(osc_plugin_path(__FILE__), 'plugincache_install');
+	osc_add_hook(osc_plugin_path(__FILE__)."_configure", 'plugincache_admin_configure');
     osc_add_hook(osc_plugin_path(__FILE__)."_uninstall", 'plugincache_uninstall');
+	osc_add_hook(osc_plugin_path(__FILE__) . "_disable", 'plugincache_clear_all');
 
         // hooks for create cache
         osc_add_hook('before_html', 'cache_start');
