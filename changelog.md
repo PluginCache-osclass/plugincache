@@ -1,3 +1,6 @@
+Cache Plugin 2.0.5 for Osclass
+ - removed cache for search pages
+
 Cache Plugin 2.0.4 for Osclass
  - name changed to 'Cache Plugin'
  - fix a bug in search cache
