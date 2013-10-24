@@ -32,12 +32,12 @@ function cacheplugin_recursiveRemove($dir) {
 
 	osc_set_preference('upload_path', osc_content_path().'uploads/cache_files/', 'cacheplugin', 'STRING');
 	osc_set_preference('main_time', '1', 'cacheplugin', 'INTEGER');
-	osc_set_preference('search_time', '1', 'cacheplugin', 'INTEGER');
+	//osc_set_preference('search_time', '1', 'cacheplugin', 'INTEGER'); REMOVED UNTIL BETTER SOLUTION
 	osc_set_preference('item_time', '24', 'cacheplugin', 'INTEGER');
 	osc_set_preference('static_time', '24', 'cacheplugin', 'INTEGER');
 	osc_set_preference('main_cache', 'active', 'cacheplugin', 'INTEGER');
 	osc_set_preference('item_cache', 'active', 'cacheplugin', 'INTEGER');
-	osc_set_preference('search_cache', 'active', 'cacheplugin', 'INTEGER');
+	//osc_set_preference('search_cache', 'active', 'cacheplugin', 'INTEGER');  REMOVED UNTIL BETTER SOLUTION
 	osc_set_preference('static_cache', 'active', 'cacheplugin', 'INTEGER');
 	osc_set_preference('posted_item_clean_cache', 'active', 'cacheplugin', 'INTEGER');
 	osc_set_preference('item_storage_folder', 'Y-m-d', 'cacheplugin', 'STRING');
@@ -45,13 +45,13 @@ function cacheplugin_recursiveRemove($dir) {
 
     function cacheplugin_uninstall() {
 	osc_delete_preference('upload_path', 'cacheplugin');
-	osc_delete_preference('search_time', 'cacheplugin');
+	//osc_delete_preference('search_time', 'cacheplugin');  REMOVED UNTIL BETTER SOLUTION
 	osc_delete_preference('item_time', 'cacheplugin');
 	osc_delete_preference('main_time', 'cacheplugin');
 	osc_delete_preference('static_time', 'cacheplugin');
 	osc_delete_preference('main_cache', 'cacheplugin');
 	osc_delete_preference('item_cache', 'cacheplugin');
-	osc_delete_preference('search_cache', 'cacheplugin');
+	//osc_delete_preference('search_cache', 'cacheplugin'); REMOVED UNTIL BETTER SOLUTION
 	osc_delete_preference('static_cache', 'cacheplugin');
 	osc_delete_preference('posted_item_clean_cache', 'cacheplugin');
 	osc_delete_preference('item_storage_folder', 'cacheplugin');
@@ -62,7 +62,7 @@ function cacheplugin_recursiveRemove($dir) {
 
 if(!function_exists('cacheplugin_cache_start')) {
         function cacheplugin_cache_start() {
-if( osc_is_home_page() || osc_is_ad_page() || osc_is_search_page() || osc_is_static_page() || osc_get_osclass_location() == 'contact') {
+if( osc_is_home_page() || osc_is_ad_page() /* || osc_is_search_page() */ || osc_is_static_page() || osc_get_osclass_location() == 'contact') {
         if(!osc_is_web_user_logged_in()) {
 
 
@@ -116,8 +116,8 @@ if( osc_is_home_page() || osc_is_ad_page() || osc_is_search_page() || osc_is_sta
       }
       ob_start(); // start the output buffer
 }
-// cache search page
-          elseif ((osc_is_search_page())&&(osc_get_preference('search_cache', 'cacheplugin')== 'active')&&(!osc_show_flash_message())&&(osc_search_city()=='')&&(osc_search_pattern()=='')) {
+// cache search page REMOVED UNTIL BETTER SOLUTION
+          /* elseif ((osc_is_search_page())&&(osc_get_preference('search_cache', 'cacheplugin')== 'active')&&(!osc_show_flash_message())&&(osc_search_city()=='')&&(osc_search_pattern()=='')) {
                   function t(&$a, &$d) {
     $a = osc_search_region();
   //  $b = osc_search_city();
@@ -150,7 +150,7 @@ $cachetitle = $d ;
       }
       ob_start(); // start the output buffer
                       }
-                   }
+                   } */
                }
                }
             }
@@ -158,7 +158,7 @@ $cachetitle = $d ;
 
 if(!function_exists('cacheplugin_cache_end')) {
 function cacheplugin_cache_end() {
-if( osc_is_home_page() || osc_is_ad_page() || osc_is_search_page() || osc_is_static_page() || osc_get_osclass_location() == 'contact' ) {
+if( osc_is_home_page() || osc_is_ad_page() /* || osc_is_search_page() */ || osc_is_static_page() || osc_get_osclass_location() == 'contact' ) {
         if(!osc_is_web_user_logged_in()) {
 
          if ((osc_is_ad_page())&&(osc_get_preference('item_cache', 'cacheplugin')== 'active')&&(!osc_item_is_spam())&&(osc_item_is_active())&&(osc_item_is_enabled())&&(!osc_show_flash_message())) {
@@ -249,8 +249,8 @@ if( osc_is_home_page() || osc_is_ad_page() || osc_is_search_page() || osc_is_sta
 
   // Send the output to the browser
         ob_end_flush(); }
-// cache search page
-          elseif ((osc_is_search_page())&&(osc_get_preference('search_cache', 'cacheplugin')== 'active')&&(!osc_show_flash_message())&&(osc_search_city()=='')&&(osc_search_pattern()=='')) {
+// cache search page REMOVED UNTIL BETTER SOLUTION
+         /*  elseif ((osc_is_search_page())&&(osc_get_preference('search_cache', 'cacheplugin')== 'active')&&(!osc_show_flash_message())&&(osc_search_city()=='')&&(osc_search_pattern()=='')) {
                   if(!function_exists('t')) {
                   function t(&$a, &$d) {
     $a = osc_search_region();
@@ -291,12 +291,13 @@ $cachetitle = $d ;
         fclose($fp);
 
   // Send the output to the browser
-        ob_end_flush(); }}
+        ob_end_flush(); }
+		} */
 
 
       // Serve from the cache if it is younger than $cachetime
-          }
-                }
+				}
+              }
          }
   }
 
@@ -333,10 +334,10 @@ $cachetitle = $d ;
         foreach($files as $f) {
             @unlink($f);
         }
-                $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."search/*");
+               /*  $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."search/*");
         foreach($files as $f) {
             @unlink($f);
-        }
+        } */
                 $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."main/*");
         foreach($files as $f) {
             @unlink($f);
@@ -344,10 +345,10 @@ $cachetitle = $d ;
                 }
 
                 function cacheplugin_posted_item(){
-                        $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."search/*");
+                        /* $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."search/*");
         foreach($files as $f) {
             @unlink($f);
-        }
+        } */
                 $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."main/*");
         foreach($files as $f) {
             @unlink($f);
@@ -368,12 +369,12 @@ $cachetitle = $d ;
         }
     }
 
-        function cacheplugin_clear_search() {
+       /*  function cacheplugin_clear_search() {
         $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."search/*");
         foreach($files as $f) {
             @unlink($f);
-        }
-    }
+        } 
+    }*/
 
                 function cacheplugin_clear_main() {
         $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."main/*");
@@ -385,7 +386,7 @@ $cachetitle = $d ;
 	            function cacheplugin_clear_all() {
 				cacheplugin_clear_item();
 				cacheplugin_clear_static();
-				cacheplugin_clear_search();
+				//cacheplugin_clear_search(); REMOVED UNTIL BETTER SOLUTION
 				cacheplugin_clear_main();
 		}
 
