@@ -117,7 +117,7 @@ if( osc_is_home_page() || osc_is_ad_page() || osc_is_search_page() || osc_is_sta
       ob_start(); // start the output buffer
 }
 // cache search page
-          elseif ((osc_is_search_page())&&(osc_get_preference('search_cache', 'plugincache')== 'active')&&(!osc_show_flash_message())) {
+          elseif ((osc_is_search_page())&&(osc_get_preference('search_cache', 'plugincache')== 'active')&&(!osc_show_flash_message())&&(osc_search_city()=='')&&(osc_search_pattern()=='')) {
                   function t(&$a, &$d) {
     $a = osc_search_region();
   //  $b = osc_search_city();
@@ -250,7 +250,7 @@ if( osc_is_home_page() || osc_is_ad_page() || osc_is_search_page() || osc_is_sta
   // Send the output to the browser
         ob_end_flush(); }
 // cache search page
-          elseif ((osc_is_search_page())&&(osc_get_preference('search_cache', 'plugincache')== 'active')&&(!osc_show_flash_message())) {
+          elseif ((osc_is_search_page())&&(osc_get_preference('search_cache', 'plugincache')== 'active')&&(!osc_show_flash_message())&&(osc_search_city()=='')&&(osc_search_pattern()=='')) {
                   if(!function_exists('t')) {
                   function t(&$a, &$d) {
     $a = osc_search_region();
