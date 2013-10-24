@@ -19,13 +19,13 @@
      * License along with this program.  If not, see <http://www.gnu.org/licenses/>.
      */
         if(Params::getParam('plugin_action')=='done') {
-        osc_set_preference('search_time', Params::getParam('search_time'), 'cacheplugin', 'INTEGER');
+      //  osc_set_preference('search_time', Params::getParam('search_time'), 'cacheplugin', 'INTEGER'); REMOVED UNTIL BETTER SOLUTION
         osc_set_preference('item_time', Params::getParam('item_time'), 'cacheplugin', 'INTEGER');
         osc_set_preference('main_time', Params::getParam('main_time'), 'cacheplugin', 'INTEGER');
         osc_set_preference('static_time', Params::getParam('static_time'), 'cacheplugin', 'INTEGER');
         osc_set_preference('main_cache', Params::getParam('main_cache'), 'cacheplugin', 'INTEGER');
         osc_set_preference('item_cache', Params::getParam('item_cache'), 'cacheplugin', 'INTEGER');
-        osc_set_preference('search_cache', Params::getParam('search_cache'), 'cacheplugin', 'INTEGER');
+       // osc_set_preference('search_cache', Params::getParam('search_cache'), 'cacheplugin', 'INTEGER'); REMOVED UNTIL BETTER SOLUTION
         osc_set_preference('static_cache', Params::getParam('static_cache'), 'cacheplugin', 'INTEGER');
 		osc_set_preference('posted_item_clean_cache', Params::getParam('posted_item_clean_cache'), 'cacheplugin', 'INTEGER');
         osc_set_preference('item_storage_folder', Params::getParam('item_storage_folder'), 'cacheplugin', 'STRING');
@@ -38,9 +38,9 @@
         if(Params::getParam('static')==1) {
                 cacheplugin_clear_static();
         }
-        if(Params::getParam('search')==1) {
+        /* if(Params::getParam('search')==1) {
                 cacheplugin_clear_search();
-        }
+        } */
         if(Params::getParam('main')==1) {
                 cacheplugin_clear_main();
         }
@@ -79,13 +79,13 @@
 									<input type="radio" name="item_cache" id="item_cache" value="inactive" <?php if ($selectItemCache=='inactive') { echo ' checked'; } ?> /><span>Inactive</span>
 											<br/>
 											<br/>
-									<label for="search_cache" style="font-weight:700;"><?php _e('Cache For Search Page', 'cacheplugin'); ?></label>
+									<?php /* <label for="search_cache" style="font-weight:700;"><?php _e('Cache For Search Page', 'cacheplugin'); ?></label>
 											<br/>
 									<?php $selectSearchCache = osc_get_preference('search_cache', 'cacheplugin') ; ?>
 									<input type="radio" name="search_cache" id="search_cache" value="active" <?php if ($selectSearchCache=='active') { echo ' checked'; } ?> /><span>Active</span>
 									<input type="radio" name="search_cache" id="search_cache" value="inactive" <?php if ($selectSearchCache=='inactive') { echo ' checked'; } ?> /><span>Inactive</span>
 											<br/>
-											<br/>
+											<br/> */ ?>
 									<label for="static_cache" style="font-weight:700;"><?php _e('Cache For Static Page', 'cacheplugin'); ?></label>
 											<br/>
 									<?php $selectStaticCache = osc_get_preference('static_cache', 'cacheplugin') ; ?>
@@ -97,7 +97,7 @@
 								</div>
 								
 								<div>
-									<label for="posted_item_clean_cache" style="font-weight:700;"><?php _e('Clear main and search cache when a new ad is posted.<br/>(Is better to set "Disabled" for sites with many new ads added daily)', 'cacheplugin'); ?></label>
+									<label for="posted_item_clean_cache" style="font-weight:700;"><?php _e('Clear main cache when a new ad is posted.<br/>(Is better to set "Disabled" for sites with many new ads added daily)', 'cacheplugin'); ?></label>
 										<br/>
 									<?php $selectposteditemcleancache = osc_get_preference('posted_item_clean_cache', 'cacheplugin') ; ?>
 									<input type="radio" name="posted_item_clean_cache" id="posted_item_clean_cache" value="active" <?php if ($selectposteditemcleancache=='active') { echo ' checked'; } ?> /><span>Enabled</span>
@@ -125,11 +125,11 @@
 										<input type="text" name="main_time" id="main_time" value="<?php echo osc_get_preference('main_time', 'cacheplugin'); ?>"/>
 											<br/>
 											<br/>
-										<label for="search_time"><?php _e('Time before re-generation of cache<br/>files for search results (In Hours) ', 'cacheplugin'); ?></label>
+										<?php /* <label for="search_time"><?php _e('Time before re-generation of cache<br/>files for search results (In Hours) ', 'cacheplugin'); ?></label>
 											<br/>
 										<input type="text" name="search_time" id="search_time" value="<?php echo osc_get_preference('search_time', 'cacheplugin'); ?>"/>
 											<br/>
-											<br/>
+											<br/> */ ?>
 										<label for="item_time"><?php _e('Time before re-generation of cache files<br/>for item\'s page (In Hours)', 'cacheplugin'); ?></label>
 											<br/>
 										<input type="text" name="item_time" id="item_time" value="<?php echo osc_get_preference('item_time', 'cacheplugin'); ?>"/>
@@ -178,17 +178,17 @@
 										<span><?php _e("Clear cache of main page"); ?></span><br/><br/>
 									</td>
 								</tr>
-								<tr style="vertical-align: top;">
+								<?php /*<tr style="vertical-align: top;">
 									<td>
 										<span style="font-weight:700;"><?php _e("Search Pages"); ?></span>
 									</td>
 								</tr>
-								<tr style="vertical-align: top;">
+								 <tr style="vertical-align: top;">
 									<td>
 										<input type="checkbox" name="search" value="1">
 										<span><?php _e("Clear cache of searh pages"); ?></span><br/><br/>
 									</td>
-								</tr>
+								</tr> */ ?>
 								<tr style="vertical-align: top;">
 									<td>
 										<span style="font-weight:700;"><?php _e("Static Pages"); ?></span>
