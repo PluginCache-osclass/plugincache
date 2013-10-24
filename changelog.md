@@ -1,5 +1,6 @@
 Cache Plugin 2.0.4 for Osclass
  - name changed to 'Cache Plugin'
+ - fix a bug in search cache
  - minor improvements and reformatting
 
 Cache Plugin 2.0.3 for Osclass
