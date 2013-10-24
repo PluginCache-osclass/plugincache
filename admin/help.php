@@ -23,7 +23,7 @@
     <div style="padding: 20px;">
         <div style="float: left; width: 100%;">
             <fieldset>
-                <legend style="font-size:18px; font-weight:bold;"><?php _e('Cache Plugin Help', 'plugincache'); ?></legend>
+                <legend style="font-size:18px; font-weight:bold;"><?php _e('Cache Plugin Help', 'cacheplugin'); ?></legend>
                  <p>&nbsp;</p>
                 <h3>Don't need cron</h3>
                 <p>This plugin will work autonomously without any cron, the users will re-generate the cache browsing on your site.</p>
@@ -50,3 +50,4 @@
         <div style="clear: both;"></div>										
     </div>
 </div>
+
