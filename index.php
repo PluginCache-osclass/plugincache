@@ -447,6 +447,8 @@ $cachetitle = $d ;
                         osc_add_hook('posted_item', 'cacheplugin_posted_item');
         	}
 	}
+	
+	osc_add_hook('theme_activate', 'cacheplugin_clear_all'); // clear all cache when theme change
 
 	osc_add_hook('activate_item', 'cacheplugin_delete_item');
 	osc_add_hook('deactivate_item', 'cacheplugin_delete_item');
