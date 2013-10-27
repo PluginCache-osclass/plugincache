@@ -64,6 +64,10 @@ if(!function_exists('cacheplugin_cache_start')) {
         function cacheplugin_cache_start() {
 if( osc_is_home_page() || osc_is_ad_page() /* || osc_is_search_page() */ || osc_is_static_page() || osc_get_osclass_location() == 'contact') {
         if(!osc_is_web_user_logged_in()) {
+            $current_host = parse_url($_SERVER['HTTP_HOST'], PHP_URL_HOST);
+            if( $current_host === null ) {
+                $current_host = $_SERVER['HTTP_HOST'];
+            }
 
 
  if ((osc_is_ad_page())&&(osc_get_preference('item_cache', 'cacheplugin')== 'active')&&(!osc_item_is_spam())&&(osc_item_is_active())&&(osc_item_is_enabled())&&(!osc_show_flash_message())) {
@@ -105,7 +109,7 @@ if( osc_is_home_page() || osc_is_ad_page() /* || osc_is_search_page() */ || osc_
                 }
 // cache home page
         elseif ((osc_is_home_page())&&(osc_get_preference('main_cache', 'cacheplugin')== 'active')&&(!osc_show_flash_message())) {
-          $cachefile = osc_get_preference('upload_path', 'cacheplugin')."main/cache.html";
+          $cachefile = osc_get_preference('upload_path', 'cacheplugin')."main/".$current_host.".html";
       $cachetime = osc_get_preference('main_time', 'cacheplugin')*3600;
          if (file_exists($cachefile) && (time() - $cachetime
          < filemtime($cachefile)))
@@ -160,6 +164,10 @@ if(!function_exists('cacheplugin_cache_end')) {
 function cacheplugin_cache_end() {
 if( osc_is_home_page() || osc_is_ad_page() /* || osc_is_search_page() */ || osc_is_static_page() || osc_get_osclass_location() == 'contact' ) {
         if(!osc_is_web_user_logged_in()) {
+            $current_host = parse_url($_SERVER['HTTP_HOST'], PHP_URL_HOST);
+            if( $current_host === null ) {
+                $current_host = $_SERVER['HTTP_HOST'];
+            }
 
          if ((osc_is_ad_page())&&(osc_get_preference('item_cache', 'cacheplugin')== 'active')&&(!osc_item_is_spam())&&(osc_item_is_active())&&(osc_item_is_enabled())&&(!osc_show_flash_message())) {
 			$ItemStorageFolder = osc_get_preference('item_storage_folder', 'cacheplugin') ;
@@ -169,6 +177,9 @@ if( osc_is_home_page() || osc_is_ad_page() /* || osc_is_search_page() */ || osc_
 			$cachetitle = osc_item_id();
 			$cachefile = osc_get_preference('upload_path', 'cacheplugin')."item/".$cachePubbDate."/".$cachetitle.".html";
 			$cachetime = osc_get_preference('item_time', 'cacheplugin')*3600;
+     /**
+      * Is it necesary to double check if the file exist ?
+      *        
           if (file_exists($cachefile) && (time() - $cachetime
          < filemtime($cachefile)))
       {
@@ -176,6 +187,7 @@ if( osc_is_home_page() || osc_is_ad_page() /* || osc_is_search_page() */ || osc_
          echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." -->";
          exit;
       }
+      */
           @mkdir(osc_get_preference('upload_path', 'cacheplugin')."item/".$cachePubbDate."/", 0777, true);
        // open the cache file for writing
        $fp = fopen($cachefile, 'w');
@@ -202,6 +214,9 @@ if( osc_is_home_page() || osc_is_ad_page() /* || osc_is_search_page() */ || osc_
                                 $cachetitle = $page['pk_i_id'];
                                 $cachefile = osc_get_preference('upload_path', 'cacheplugin')."static/".$cachetitle.".html";
                         }
+     /**
+      * Is it necesary to double check if the file exist ?
+      *        
 
                         if (file_exists($cachefile) && (time() - $cachetime < filemtime($cachefile)))
                         {
@@ -209,7 +224,7 @@ if( osc_is_home_page() || osc_is_ad_page() /* || osc_is_search_page() */ || osc_
                                 echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." -->";
                                 exit;
                         }
-
+      */
                         @mkdir(osc_get_preference('upload_path', 'cacheplugin')."static/", 0777, true);
                         // open the cache file for writing
                         $fp = fopen($cachefile, 'w');
@@ -226,15 +241,19 @@ if( osc_is_home_page() || osc_is_ad_page() /* || osc_is_search_page() */ || osc_
         ob_end_flush(); }
 // cache home page
         elseif ((osc_is_home_page())&&(osc_get_preference('main_cache', 'cacheplugin')== 'active')&&(!osc_show_flash_message())) {
-          $cachefile = osc_get_preference('upload_path', 'cacheplugin')."main/cache.html";
+          $cachefile = osc_get_preference('upload_path', 'cacheplugin')."main/".$current_host.".html";
       $cachetime = osc_get_preference('main_time', 'cacheplugin')*3600;
-          if (file_exists($cachefile) && (time() - $cachetime
+     /**
+      * Is it necesary to double check if the file exist ?
+      *        
+      if (file_exists($cachefile) && (time() - $cachetime
          < filemtime($cachefile)))
       {
          include($cachefile);
          echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." -->";
          exit;
       }
+      */
           @mkdir(osc_get_preference('upload_path', 'cacheplugin')."main/", 0777, true);
        // open the cache file for writing
        $fp = fopen($cachefile, 'w');
@@ -430,8 +449,8 @@ $cachetitle = $d ;
 	osc_add_hook(osc_plugin_path(__FILE__) . "_disable", 'cacheplugin_clear_all');
 
         // hooks for create cache
-        osc_add_hook('before_html', 'cacheplugin_cache_start');
-        osc_add_hook('after_html', 'cacheplugin_cache_end');
+        osc_add_hook('before_html', 'cacheplugin_cache_start',8);
+        osc_add_hook('after_html', 'cacheplugin_cache_end',2);
 
         // clear cahe after item actions
         if(osc_version()<320) {
