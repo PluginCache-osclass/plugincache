@@ -10,34 +10,40 @@ Short Name: cacheplugin
 Plugin update URI: plugin-cache
 */
 
-if(!function_exists('osc_item_is_enabled')) {
-function osc_item_is_enabled() {
-        return (osc_item_field("b_enabled")==1);
-    }
-}
+	function cacheplugin_subdomain() {
+		$cachepageURL = $_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://';
+		$cachepageURL .= $_SERVER['SERVER_PORT'] != '80' ? $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"] : $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+		$cacheparsedUrl = parse_url($cachepageURL);
+		$cachehost = explode('.', $cacheparsedUrl['host']);
+	return $cachehost[0];
+	}
 
-function cacheplugin_recursiveRemove($dir) {
-    $structure = glob(rtrim($dir, "/").'/*');
-    if (is_array($structure)) {
+	if(!function_exists('osc_item_is_enabled')) {
+	function osc_item_is_enabled() {
+        return (osc_item_field("b_enabled")==1);
+    	}
+	}
+
+	function cacheplugin_recursiveRemove($dir) {
+		$structure = glob(rtrim($dir, "/").'/*');
+    	if (is_array($structure)) {
         foreach($structure as $file) {
-            if (is_dir($file)) cacheplugin_recursiveRemove($file);
-            elseif (is_file($file)) unlink($file);
-        }
-    }
-    rmdir($dir);
-}
+        if (is_dir($file)) cacheplugin_recursiveRemove($file);
+        elseif (is_file($file)) unlink($file);
+        	}
+   		 }
+   	 rmdir($dir);
+	}
 
     function cacheplugin_install() {
 		@mkdir(osc_content_path().'uploads/cache_files/', 0777, true);
 
 	osc_set_preference('upload_path', osc_content_path().'uploads/cache_files/', 'cacheplugin', 'STRING');
 	osc_set_preference('main_time', '1', 'cacheplugin', 'INTEGER');
-	//osc_set_preference('search_time', '1', 'cacheplugin', 'INTEGER'); REMOVED UNTIL BETTER SOLUTION
 	osc_set_preference('item_time', '24', 'cacheplugin', 'INTEGER');
 	osc_set_preference('static_time', '24', 'cacheplugin', 'INTEGER');
 	osc_set_preference('main_cache', 'active', 'cacheplugin', 'INTEGER');
 	osc_set_preference('item_cache', 'active', 'cacheplugin', 'INTEGER');
-	//osc_set_preference('search_cache', 'active', 'cacheplugin', 'INTEGER');  REMOVED UNTIL BETTER SOLUTION
 	osc_set_preference('static_cache', 'active', 'cacheplugin', 'INTEGER');
 	osc_set_preference('posted_item_clean_cache', 'active', 'cacheplugin', 'INTEGER');
 	osc_set_preference('item_storage_folder', 'Y-m-d', 'cacheplugin', 'STRING');
@@ -45,13 +51,11 @@ function cacheplugin_recursiveRemove($dir) {
 
     function cacheplugin_uninstall() {
 	osc_delete_preference('upload_path', 'cacheplugin');
-	//osc_delete_preference('search_time', 'cacheplugin');  REMOVED UNTIL BETTER SOLUTION
 	osc_delete_preference('item_time', 'cacheplugin');
 	osc_delete_preference('main_time', 'cacheplugin');
 	osc_delete_preference('static_time', 'cacheplugin');
 	osc_delete_preference('main_cache', 'cacheplugin');
 	osc_delete_preference('item_cache', 'cacheplugin');
-	//osc_delete_preference('search_cache', 'cacheplugin'); REMOVED UNTIL BETTER SOLUTION
 	osc_delete_preference('static_cache', 'cacheplugin');
 	osc_delete_preference('posted_item_clean_cache', 'cacheplugin');
 	osc_delete_preference('item_storage_folder', 'cacheplugin');
@@ -60,21 +64,21 @@ function cacheplugin_recursiveRemove($dir) {
         cacheplugin_recursiveRemove($dir);
     }
 
-if(!function_exists('cacheplugin_cache_start')) {
+	if(!function_exists('cacheplugin_cache_start')) {
         function cacheplugin_cache_start() {
-if( osc_is_home_page() || osc_is_ad_page() /* || osc_is_search_page() */ || osc_is_static_page() || osc_get_osclass_location() == 'contact') {
+		if( osc_is_home_page() || osc_is_ad_page() || osc_is_static_page() || osc_get_osclass_location() == 'contact') {
         if(!osc_is_web_user_logged_in()) {
 
 
- if ((osc_is_ad_page())&&(osc_get_preference('item_cache', 'cacheplugin')== 'active')&&(!osc_item_is_spam())&&(osc_item_is_active())&&(osc_item_is_enabled())&&(!osc_show_flash_message())) {
+		if ((osc_is_ad_page())&&(osc_get_preference('item_cache', 'cacheplugin')== 'active')&&(!osc_item_is_spam())&&(osc_item_is_active())&&(osc_item_is_enabled())&&(!osc_show_flash_message())) {
          $ItemStorageFolder = osc_get_preference('item_storage_folder', 'cacheplugin') ;
          $PubbDate = osc_item_pub_date();
-     $DatePubb = date_create($PubbDate);
-     $cachePubbDate = date_format($DatePubb, $ItemStorageFolder);
+    	 $DatePubb = date_create($PubbDate);
+    	 $cachePubbDate = date_format($DatePubb, $ItemStorageFolder);
          $cachetitle = osc_item_id();
-     $cachefile = osc_get_preference('upload_path', 'cacheplugin')."item/".$cachePubbDate."/".$cachetitle.".html";
+    	 $cachefile = osc_get_preference('upload_path', 'cacheplugin')."item/".$cachePubbDate."/".$cachetitle.".html";
          $cachetime = osc_get_preference('item_time', 'cacheplugin')*3600;
-           if (file_exists($cachefile) && (time() - $cachetime
+         if (file_exists($cachefile) && (time() - $cachetime
          < filemtime($cachefile)))
       {
          include($cachefile);
@@ -105,7 +109,7 @@ if( osc_is_home_page() || osc_is_ad_page() /* || osc_is_search_page() */ || osc_
                 }
 // cache home page
         elseif ((osc_is_home_page())&&(osc_get_preference('main_cache', 'cacheplugin')== 'active')&&(!osc_show_flash_message())) {
-          $cachefile = osc_get_preference('upload_path', 'cacheplugin')."main/cache.html";
+          $cachefile = osc_get_preference('upload_path', 'cacheplugin')."main/".cacheplugin_subdomain()."_cache.html";
       $cachetime = osc_get_preference('main_time', 'cacheplugin')*3600;
          if (file_exists($cachefile) && (time() - $cachetime
          < filemtime($cachefile)))
@@ -115,53 +119,18 @@ if( osc_is_home_page() || osc_is_ad_page() /* || osc_is_search_page() */ || osc_
          exit;
       }
       ob_start(); // start the output buffer
-}
-// cache search page REMOVED UNTIL BETTER SOLUTION
-          /* elseif ((osc_is_search_page())&&(osc_get_preference('search_cache', 'cacheplugin')== 'active')&&(!osc_show_flash_message())&&(osc_search_city()=='')&&(osc_search_pattern()=='')) {
-                  function t(&$a, &$d) {
-    $a = osc_search_region();
-  //  $b = osc_search_city();
-//        $c = osc_search_pattern();
-        $dcat = osc_search_category();
-        foreach($dcat as $dca) {
-                $d = osc_category_name();}
-}
-t($a,$d);
-
-if ($a == ''){
-$cachetitle = $d ;
-          } elseif ($d == '') {
-                  $cachetitle = $a ;
-          } else {
-                  $cachetitle = $a.'_'.$d ;
-          }
-          if ($cachetitle != '') {
-
-      $cachefile = osc_get_preference('upload_path', 'cacheplugin')."search/".$cachetitle.".html";
-          $cachetime = osc_get_preference('search_time', 'cacheplugin')*3600;
-
-          // Serve from the cache if it is younger than $cachetime
-      if (file_exists($cachefile) && (time() - $cachetime
-         < filemtime($cachefile)))
-      {
-         include($cachefile);
-         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." -->";
-         exit;
-      }
-      ob_start(); // start the output buffer
-                      }
-                   } */
-               }
-               }
+				}
+              }
             }
-     }
+          }
+     	}
 
-if(!function_exists('cacheplugin_cache_end')) {
-function cacheplugin_cache_end() {
-if( osc_is_home_page() || osc_is_ad_page() /* || osc_is_search_page() */ || osc_is_static_page() || osc_get_osclass_location() == 'contact' ) {
+	if(!function_exists('cacheplugin_cache_end')) {
+	function cacheplugin_cache_end() {
+		if( osc_is_home_page() || osc_is_ad_page() || osc_is_static_page() || osc_get_osclass_location() == 'contact' ) {
         if(!osc_is_web_user_logged_in()) {
 
-         if ((osc_is_ad_page())&&(osc_get_preference('item_cache', 'cacheplugin')== 'active')&&(!osc_item_is_spam())&&(osc_item_is_active())&&(osc_item_is_enabled())&&(!osc_show_flash_message())) {
+        if ((osc_is_ad_page())&&(osc_get_preference('item_cache', 'cacheplugin')== 'active')&&(!osc_item_is_spam())&&(osc_item_is_active())&&(osc_item_is_enabled())&&(!osc_show_flash_message())) {
 			$ItemStorageFolder = osc_get_preference('item_storage_folder', 'cacheplugin') ;
 			$PubbDate = osc_item_pub_date();
 			$DatePubb = date_create($PubbDate);
@@ -169,28 +138,18 @@ if( osc_is_home_page() || osc_is_ad_page() /* || osc_is_search_page() */ || osc_
 			$cachetitle = osc_item_id();
 			$cachefile = osc_get_preference('upload_path', 'cacheplugin')."item/".$cachePubbDate."/".$cachetitle.".html";
 			$cachetime = osc_get_preference('item_time', 'cacheplugin')*3600;
-          if (file_exists($cachefile) && (time() - $cachetime
-         < filemtime($cachefile)))
-      {
-         include($cachefile);
-         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." -->";
-         exit;
-      }
-          @mkdir(osc_get_preference('upload_path', 'cacheplugin')."item/".$cachePubbDate."/", 0777, true);
+          
+            @mkdir(osc_get_preference('upload_path', 'cacheplugin')."item/".$cachePubbDate."/", 0777, true);
        // open the cache file for writing
-       $fp = fopen($cachefile, 'w');
-
-
+       		$fp = fopen($cachefile, 'w');
        // save the contents of output buffer to the file
-     fwrite($fp, ob_get_contents());
-
-  // close the file
-
-        fclose($fp);
-
-  // Send the output to the browser
-        ob_end_flush();
+     		fwrite($fp, ob_get_contents());
+		// close the file
+			fclose($fp);
+		// Send the output to the browser
+        	ob_end_flush();
           }
+		  
 // cache static pages
           elseif ((osc_is_static_page() || osc_get_osclass_location() == 'contact')&&(osc_get_preference('static_cache', 'cacheplugin')== 'active')&&(!osc_show_flash_message())) {
                         $cachetime = osc_get_preference('static_time', 'cacheplugin')*3600;
@@ -203,213 +162,131 @@ if( osc_is_home_page() || osc_is_ad_page() /* || osc_is_search_page() */ || osc_
                                 $cachefile = osc_get_preference('upload_path', 'cacheplugin')."static/".$cachetitle.".html";
                         }
 
-                        if (file_exists($cachefile) && (time() - $cachetime < filemtime($cachefile)))
-                        {
-                                include($cachefile);
-                                echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." -->";
-                                exit;
-                        }
-
                         @mkdir(osc_get_preference('upload_path', 'cacheplugin')."static/", 0777, true);
                         // open the cache file for writing
                         $fp = fopen($cachefile, 'w');
-
-
                 // save the contents of output buffer to the file
                 fwrite($fp, ob_get_contents());
-
   // close the file
-
         fclose($fp);
-
   // Send the output to the browser
-        ob_end_flush(); }
+        ob_end_flush(); 
+		}
+		
 // cache home page
         elseif ((osc_is_home_page())&&(osc_get_preference('main_cache', 'cacheplugin')== 'active')&&(!osc_show_flash_message())) {
-          $cachefile = osc_get_preference('upload_path', 'cacheplugin')."main/cache.html";
-      $cachetime = osc_get_preference('main_time', 'cacheplugin')*3600;
-          if (file_exists($cachefile) && (time() - $cachetime
-         < filemtime($cachefile)))
-      {
-         include($cachefile);
-         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." -->";
-         exit;
-      }
+          $cachefile = osc_get_preference('upload_path', 'cacheplugin')."main/".cacheplugin_subdomain()."_cache.html";
+     		 $cachetime = osc_get_preference('main_time', 'cacheplugin')*3600;
+          
           @mkdir(osc_get_preference('upload_path', 'cacheplugin')."main/", 0777, true);
        // open the cache file for writing
        $fp = fopen($cachefile, 'w');
-
-
        // save the contents of output buffer to the file
      fwrite($fp, ob_get_contents());
-
   // close the file
-
         fclose($fp);
-
   // Send the output to the browser
-        ob_end_flush(); }
-// cache search page REMOVED UNTIL BETTER SOLUTION
-         /*  elseif ((osc_is_search_page())&&(osc_get_preference('search_cache', 'cacheplugin')== 'active')&&(!osc_show_flash_message())&&(osc_search_city()=='')&&(osc_search_pattern()=='')) {
-                  if(!function_exists('t')) {
-                  function t(&$a, &$d) {
-    $a = osc_search_region();
-  //  $b = osc_search_city();
-//        $c = osc_search_pattern();
-        $dcat = osc_search_category();
-        foreach($dcat as $dca) {
-                $d = osc_category_name();}
-}}
-t($a,$d);
-if ($a == ''){
-$cachetitle = $d ;
-          } elseif ($d == '') {
-                  $cachetitle = $a ;
-          } else {
-                  $cachetitle = $a.'_'.$d ;
-          }
-            if ($cachetitle != '') {
-      $cachefile = osc_get_preference('upload_path', 'cacheplugin')."search/".$cachetitle.".html";
-          $cachetime = osc_get_preference('search_time', 'cacheplugin')*3600;
-          if (file_exists($cachefile) && (time() - $cachetime
-         < filemtime($cachefile)))
-      {
-         include($cachefile);
-         echo "<!-- Cached ".date('jS F Y H:i', filemtime($cachefile))." -->";
-         exit;
-      }
-          @mkdir(osc_get_preference('upload_path', 'cacheplugin')."search/", 0777, true);
-       // open the cache file for writing
-       $fp = fopen($cachefile, 'w');
-
-
-       // save the contents of output buffer to the file
-     fwrite($fp, ob_get_contents());
-
-  // close the file
-
-        fclose($fp);
-
-  // Send the output to the browser
-        ob_end_flush(); }
-		} */
-
-
-      // Serve from the cache if it is younger than $cachetime
+        ob_end_flush();
+					}
 				}
-              }
-         }
-  }
+			}
+		}
+	}
 
         function cacheplugin_add_comment($item) {
                 $ItemStorageFolder = osc_get_preference('item_storage_folder', 'cacheplugin') ;
                 $PubbDate = osc_item_pub_date($item);
-     $DatePubb = date_create($PubbDate);
-     $cachePubbDate = date_format($DatePubb, $ItemStorageFolder);
+    			$DatePubb = date_create($PubbDate);
+     			$cachePubbDate = date_format($DatePubb, $ItemStorageFolder);
                 $IdItem = osc_item_id($item);
-       $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."item/".$cachePubbDate."/".$IdItem.".html");
+      			$files = rglob(osc_get_preference('upload_path', 'cacheplugin')."item/".$cachePubbDate."/".$IdItem.".html");
         foreach($files as $f) {
             @unlink($f);
         }
     }
 
- function cacheplugin_item_edit_post($item) {
-         $ItemStorageFolder = osc_get_preference('item_storage_folder', 'cacheplugin') ;
-         $PubbDate = osc_item_pub_date($item);
-     $DatePubb = date_create($PubbDate);
-     $cachePubbDate = date_format($DatePubb, $ItemStorageFolder);
-                        $IdItem = osc_item_id($item);
-       $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."item/".$cachePubbDate."/".$IdItem.".html");
+ 		function cacheplugin_item_edit_post($item) {
+        	 $ItemStorageFolder = osc_get_preference('item_storage_folder', 'cacheplugin') ;
+        	 $PubbDate = osc_item_pub_date($item);
+    		 $DatePubb = date_create($PubbDate);
+    		 $cachePubbDate = date_format($DatePubb, $ItemStorageFolder);
+             $IdItem = osc_item_id($item);
+      		 $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."item/".$cachePubbDate."/".$IdItem.".html");
         foreach($files as $f) {
             @unlink($f);
-        }
+       		 }
         }
 
         function cacheplugin_delete_item($id) {
                 $ItemStorageFolder = osc_get_preference('item_storage_folder', 'cacheplugin') ;
                 $PubbDate = osc_item_pub_date($id);
-     $DatePubb = date_create($PubbDate);
-     $cachePubbDate = date_format($DatePubb, $ItemStorageFolder);
+    		    $DatePubb = date_create($PubbDate);
+     		    $cachePubbDate = date_format($DatePubb, $ItemStorageFolder);
                 $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."item/".$cachePubbDate."/".$id.".html");
-        foreach($files as $f) {
-            @unlink($f);
+           foreach($files as $f) {
+               @unlink($f);
         }
-               /*  $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."search/*");
-        foreach($files as $f) {
+                $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."main/*");
+          foreach($files as $f) {
             @unlink($f);
-        } */
+           	}
+        }
+
+        function cacheplugin_posted_item(){
                 $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."main/*");
         foreach($files as $f) {
             @unlink($f);
-           }
-                }
-
-                function cacheplugin_posted_item(){
-                        /* $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."search/*");
-        foreach($files as $f) {
-            @unlink($f);
-        } */
-                $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."main/*");
-        foreach($files as $f) {
-            @unlink($f);
-        }
+       		 }
         }
 
-                function cacheplugin_clear_item() {
-        $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."item/");
+        function cacheplugin_clear_item() {
+       		 $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."item/");
         foreach($files as $f) {
              cacheplugin_recursiveRemove($f);
-        }
-    }
+       		 }
+   		}
 
         function cacheplugin_clear_static() {
-        $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."static/*");
+      		  $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."static/*");
         foreach($files as $f) {
             @unlink($f);
-        }
-    }
-
-       /*  function cacheplugin_clear_search() {
-        $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."search/*");
+       		 }
+   		}
+                
+		function cacheplugin_clear_main() {
+       		 $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."main/*");
         foreach($files as $f) {
             @unlink($f);
-        } 
-    }*/
+       		 }
+   		}
 
-                function cacheplugin_clear_main() {
-        $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."main/*");
-        foreach($files as $f) {
-            @unlink($f);
-        }
-    }
-
-	            function cacheplugin_clear_all() {
-				cacheplugin_clear_item();
-				cacheplugin_clear_static();
-				//cacheplugin_clear_search(); REMOVED UNTIL BETTER SOLUTION
-				cacheplugin_clear_main();
+	    function cacheplugin_clear_all() {
+			cacheplugin_clear_item();
+			cacheplugin_clear_static();
+			cacheplugin_clear_main();
 		}
 
         function cacheplugin_edit_comment($id) {
-                $conn = getConnection();
-        $ItemIds = $conn->osc_dbFetchResult("SELECT fk_i_item_id FROM %st_item_comment WHERE pk_i_id = %d", DB_TABLE_PREFIX, $id);
-                $ItemId = $ItemIds['fk_i_item_id'];
-                $PubbDate = osc_item_pub_date($ItemId['fk_i_item_id']);
-     $DatePubb = date_create($PubbDate);
-     $cachePubbDate = date_format($DatePubb, 'Y-m-d');
-         $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."item/".$cachePubbDate."/".$ItemId.".html");
+             $conn = getConnection();
+       		 $ItemIds = $conn->osc_dbFetchResult("SELECT fk_i_item_id FROM %st_item_comment WHERE pk_i_id = %d", DB_TABLE_PREFIX, $id);
+             $ItemId = $ItemIds['fk_i_item_id'];
+             $PubbDate = osc_item_pub_date($ItemId['fk_i_item_id']);
+    		 $DatePubb = date_create($PubbDate);
+    		 $cachePubbDate = date_format($DatePubb, 'Y-m-d');
+         	 $files = rglob(osc_get_preference('upload_path', 'cacheplugin')."item/".$cachePubbDate."/".$ItemId.".html");
         foreach($files as $f) {
             @unlink($f);
-           }
-                }
+          	 }
+         }
+		 
 	// This can be removed once we no longer support Osclass 310 and older.
-    function cacheplugin_admin_menu_old() {
-        echo '<h3><a href="#">Cache Plugin</a></h3>
-        <ul>
-            <li><a href="' . osc_admin_render_plugin_url(osc_plugin_folder(__FILE__) . 'admin/conf.php') . '">&raquo; ' . __('Settings', 'cacheplugin') . '</a></li>
-            <li><a href="' . osc_admin_render_plugin_url(osc_plugin_folder(__FILE__) . 'admin/help.php') . '">&raquo; ' . __('Help', 'cacheplugin') . '</a></li>
-        </ul>';
-    }
+   		 function cacheplugin_admin_menu_old() {
+       			 echo '<h3><a href="#">Cache Plugin</a></h3>
+       				   <ul>
+           			   <li><a href="' . osc_admin_render_plugin_url(osc_plugin_folder(__FILE__) . 'admin/conf.php') . '">&raquo; ' . __('Settings', 'cacheplugin') . '</a></li>
+            		   <li><a href="' . osc_admin_render_plugin_url(osc_plugin_folder(__FILE__) . 'admin/help.php') . '">&raquo; ' . __('Help', 'cacheplugin') . '</a></li>
+        			  </ul>';
+   		 }
 
     function cacheplugin_admin_menu() {
 		osc_add_admin_submenu_divider( 'plugins', 'Cache Plugin', 'cacheplugin', $capability = null);
@@ -430,8 +307,8 @@ $cachetitle = $d ;
 	osc_add_hook(osc_plugin_path(__FILE__) . "_disable", 'cacheplugin_clear_all');
 
         // hooks for create cache
-        osc_add_hook('before_html', 'cacheplugin_cache_start');
-        osc_add_hook('after_html', 'cacheplugin_cache_end');
+        osc_add_hook('before_html', 'cacheplugin_cache_start',8);
+        osc_add_hook('after_html', 'cacheplugin_cache_end',2);
 
         // clear cahe after item actions
         if(osc_version()<320) {
@@ -470,7 +347,7 @@ $cachetitle = $d ;
 	if(osc_version()<320) {
 		osc_add_hook('admin_menu', 'cacheplugin_admin_menu_old');
 	} else {
-        	osc_add_hook('admin_menu_init', 'cacheplugin_admin_menu');
+        osc_add_hook('admin_menu_init', 'cacheplugin_admin_menu');
 	}
 
 ?>
