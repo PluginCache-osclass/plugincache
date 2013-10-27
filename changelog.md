@@ -1,5 +1,8 @@
 Cache Plugin 2.0.5 for Osclass
  - removed cache for search pages
+ - fix a bug with subdomains
+ - add function to clear cache when theme change
+ - general clean up of code
 
 Cache Plugin 2.0.4 for Osclass
  - name changed to 'Cache Plugin'
