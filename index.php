@@ -449,7 +449,7 @@ $cachetitle = $d ;
 	osc_add_hook(osc_plugin_path(__FILE__) . "_disable", 'cacheplugin_clear_all');
 
         // hooks for create cache
-        osc_add_hook('before_html', 'cacheplugin_cache_start',9);
+        osc_add_hook('before_html', 'cacheplugin_cache_start',8);
         osc_add_hook('after_html', 'cacheplugin_cache_end',2);
 
         // clear cahe after item actions
