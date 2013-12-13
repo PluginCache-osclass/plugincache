@@ -1,9 +1,9 @@
 <?php
     /*
-     *      OSCLass – software for creating and publishing online classified
+     *      Osclass – software for creating and publishing online classified
      *                           advertising platforms
      *
-     *                        Copyright (C) 2010 OSCLASS
+     *                        Copyright (c) 2013 Osclass
      *
      *       This program is free software: you can redistribute it and/or
      *     modify it under the terms of the GNU Affero General Public License
@@ -26,25 +26,25 @@
                 <legend style="font-size:18px; font-weight:bold;"><?php _e('Cache Plugin Help', 'cacheplugin'); ?></legend>
                  <p>&nbsp;</p>
                 <h3>Don't need cron</h3>
-                <p>This plugin will work autonomously without any cron, the users will re-generate the cache browsing on your site.</p>
-                <br/>
+                <p>This plugin will work autonomously without any cron, the users will re-generate the cache while browsing on your site.</p>
+                <br>
                 <h3>Setting cache time</h3>
-                <p>the time setting is based on hours, this means that to set one hour you enter 1, to set one day you enter 24, to set one week you enter 168 and so on. You can also set less than one hour, for example if you want 15 minutes you can enter 0.25, 30 minutes 0.5 etc.  </p>
-                <br/>
+                <p>The time setting is based on hours, this means that to set one hour you enter 1, to set one day you enter 24, to set one week you enter 168 and so on.<br>You can also set less than one hour, for example if you want 15 minutes you can enter 0.25, 30 minutes 0.5 etc.</p>
+                <br>
                 <h3>Flexibility on which pages enable the cache</h3>
-                <p>The plugin will make the cache of 3 pages (Items Pages - Main Pages - Static Pages), From the setting page of the plugin you can enable/disable the cache in each one of the pages. </p>
-                <br/>
+                <p>The plugin will cache 3 pages (Items Pages - Main Pages - Static Pages). From the settings page of the plugin you can enable/disable the cache in each one of the pages.</p>
+                <br>
                 <h3>Clean the cache folders</h3>
-                <p>You can also delete the files in each one of the folders in the plugin setting. It will show a list with de deleted files if any.</p>
-                <br/>
+                <p>You can also delete the files in each one of the folders in the plugin settings. It will show a list with the deleted files if any.</p>
+                <br>
                 <h3>Storage of items cache</h3>
-                <p>The cache of ads is stored in subfolders based on ad pubblication date</p>
-                <br/>
-                <h3>Setting the item cache</h3>
-                <p>From plugin setting you can choose how the subfolder are created: by year, by month or by day</p>
-                <br/>
+                <p>The cache of ads is stored in subfolders based on the publication date of the ad</p>
+                <br>
+                <h3>Setting the items cache</h3>
+                <p>From the plugin settings you can choose how the subfolders are created: by year, by month or by day</p>
+                <br>
                 <h3>Clear the cache in main folder when a new ad is posted</h3>
-                <p>From plugin setting you have the option to enable or disable this function. Useful if your site has high traffic and many new ads posted daily</p> 
+                <p>From the plugin settings you have the option to enable or disable this feature. Useful if your site has high traffic and many new ads are posted daily</p> 
             </fieldset>
         </div>
         <div style="clear: both;"></div>										
