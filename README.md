@@ -23,4 +23,4 @@ Features
 
 Forum
 -----
-http://forums.osclass.org/plugins/caching-plugin/
+http://forums.osclass.org/plugins/(new-plugin)-cacheplugin/
